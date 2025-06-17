@@ -1,0 +1,47 @@
+.custom-border {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background: white;
+  border-radius: 40px 0px 40px 0px;
+}
+
+/* Esquina superior derecha (morado) */
+.custom-border .top-right-horizontal {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 5px;
+  background-color: purple;
+}
+
+.custom-border::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 50%;
+  background-color: purple;
+}
+
+/* Esquina inferior izquierda (amarillo) */
+.custom-border .bottom-left-horizontal {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  height: 5px;
+  background-color: yellow;
+}
+
+.custom-border .bottom-left-vertical {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  height: 50%;
+  background-color: yellow;
+}
