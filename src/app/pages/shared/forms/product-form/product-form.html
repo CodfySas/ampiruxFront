@@ -1,0 +1,79 @@
+<mat-dialog-content class="flex flex-col gap-4 p-2 relative">
+  <mat-spinner *ngIf="isLoading" diameter="40"
+    class="!absolute !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2 z-100"></mat-spinner>
+  <div class="!text-2xl !text-purple-700 !p-2 flex flex-col gap-3 ">
+    {{ product ? 'Editar Producto' : 'Nuevo Producto' }}
+    <mat-divider></mat-divider>
+  </div>
+  <div class="flex flex-wrap gap-5" [ngClass]="isLoading ? 'opacity-50' : ''">
+    <div class="w-full md:w-[47%]">
+      <label class="mb-1 text-xs text-gray-600">Nombre del producto <span class="text-red-500">*</span></label>
+      <mat-form-field class="w-full">
+        <input matInput required [(ngModel)]="productNew.name" placeholder="Ej: Shampoo anticaspa">
+      </mat-form-field>
+    </div>
+
+    <div class="w-full md:w-[47%]">
+      <label class="mb-1 text-xs text-gray-600">Precio</label>
+      <mat-form-field class="w-full">
+        <input matInput [(ngModel)]="productNew.price" type="number" placeholder="Ej: 18000">
+      </mat-form-field>
+    </div>
+
+    <div class="w-full">
+      <label class="mb-1 text-xs text-gray-600">Descripción</label>
+      <mat-form-field class="w-full">
+        <textarea matInput class="!resize-none" [(ngModel)]="productNew.description"
+          placeholder="Descripción del producto"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="w-full md:w-[30%]">
+      <label class="mb-1 text-xs text-gray-600">Stock</label>
+      <div class="flex gap-2 items-center">
+        <button (click)="updateStock(false)"
+          class="w-8 h-8 flex items-center justify-center rounded-sm cursor-pointer border-purple-200 hover:border-purple-600 border-2">
+          <mat-icon fontIcon="remove" class="primary"></mat-icon>
+        </button>
+        <mat-form-field class="flex-1">
+          <input matInput type="number" [(ngModel)]="productNew.stock" placeholder="Cantidad en inventario">
+        </mat-form-field>
+        <button (click)="updateStock(true)"
+          class="w-8 h-8 flex items-center justify-center rounded-sm cursor-pointer border-purple-200 hover:border-purple-600 border-2">
+          <mat-icon fontIcon="add" class="primary"></mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="w-full md:w-[19%]">
+      <label class="mb-1 text-xs text-gray-600">Unidad</label>
+      <mat-form-field class="w-full">
+        <mat-select [(ngModel)]="productNew.unit" placeholder="ml, gr, u">
+          <mat-option [value]="'u'">u</mat-option>
+          <mat-option [value]="'gr'">gr</mat-option>
+          <mat-option [value]="'ml'">ml</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="w-full md:w-[42%]">
+      <label class="mb-1 text-xs text-gray-600">Categoría</label>
+      <mat-form-field class="w-full">
+        <mat-select [(ngModel)]="productNew.category_uuid" placeholder="Selecciona una categoría">
+          <mat-option *ngFor="let c of categories" [value]="c.uuid">{{ c.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <div class="flex justify-end p-2 gap-3 mt-8">
+    <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
+    <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading" (click)="onSave()">
+      {{ product ? 'Guardar Cambios' : 'Crear Producto' }}
+    </button>
+  </div>
+
+</mat-dialog-actions>

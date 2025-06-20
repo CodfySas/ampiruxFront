@@ -1,3 +1,5 @@
+import { Base } from "./base.interface";
+
 export interface LoginRequest {
   username: string;
   password: string;
@@ -11,10 +13,10 @@ export interface LoginResponse {
   name: string;
   lastname: string;
   fullName: string;
+  barbershop_uuid: string;
 }
 
-export interface User {
-  uuid: string;
+export interface User extends Base {
   username: string;
   email: string;
   name: string;

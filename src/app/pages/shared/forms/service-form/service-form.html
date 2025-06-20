@@ -1,0 +1,117 @@
+<mat-dialog-content class="flex flex-col gap-4 p-2 relative">
+  <mat-spinner *ngIf="isLoading" diameter="40"
+    class="!absolute !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2 z-100"></mat-spinner>
+  <div class="!text-2xl !text-purple-700 !p-2 flex flex-col gap-3 ">
+    {{ data ? 'Editar Servicio' : 'Nuevo Servicio' }}
+    <mat-divider></mat-divider>
+  </div>
+  <div class="flex flex-wrap gap-5" [ngClass]="isLoading ? 'opacity-50' : ''">
+    <div class="w-full md:w-[40%]">
+      <label class="mb-1 text-xs text-gray-600">Nombre del Servicio <span class="text-red-500">*</span></label>
+      <mat-form-field class="w-full">
+        <input matInput required [(ngModel)]="new.name" placeholder="Ej: Corte de cabello">
+      </mat-form-field>
+    </div>
+
+    <div class="w-full md:w-[23%]">
+      <label class="mb-1 text-xs text-gray-600">Precio</label>
+      <mat-form-field class="w-full">
+        <input matInput [(ngModel)]="new.price" type="number" placeholder="Ej: 15000">
+      </mat-form-field>
+    </div>
+
+    <div class="w-full md:w-[28%]">
+      <label class="mb-1 text-xs text-gray-600">Duración (minutos)</label>
+      <mat-form-field class="w-full">
+        <input matInput [(ngModel)]="new.duration_minutes" type="number" placeholder="Ej: 45">
+      </mat-form-field>
+    </div>
+
+    <div class="w-full">
+      <label class="mb-1 text-xs text-gray-600">Descripción</label>
+      <mat-form-field class="w-full">
+        <textarea matInput class="!resize-none" [(ngModel)]="new.description"
+          placeholder="Descripción del servicio"></textarea>
+      </mat-form-field>
+    </div>
+  </div>
+  <br>
+  <mat-accordion class="mt-5">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title> Productos incluidos ({{ new.default_products?.length || 0 }}) </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="flex flex-col gap-4">
+        <div *ngIf="new.default_products && new.default_products.length > 0" class="mt-4">
+          <h4 class="font-medium mb-3">Productos seleccionados:</h4>
+          <div *ngFor="let defaultProduct of new.default_products; let i = index"
+            class="border rounded-lg p-4 mb-3 bg-gray-50">
+            <div class="flex justify-between items-start mb-3">
+              <div class="font-medium">{{ getProductName(defaultProduct.product_uuid!) }}</div>
+              <button mat-icon-button color="warn" (click)="removeProduct(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <mat-form-field class="w-full">
+                <mat-label>Cantidad</mat-label>
+                <input matInput type="number" [(ngModel)]="defaultProduct.quantity" min="1">
+                <span matSuffix>&nbsp; {{getProductUnit(defaultProduct.product_uuid!)}}&nbsp;</span>
+              </mat-form-field>
+
+              <mat-form-field class="w-full">
+                <mat-label>¿Quién paga?</mat-label>
+                <mat-select [(ngModel)]="defaultProduct.cost_type">
+                  <mat-option value="cortesy">Barbería (cortesía)</mat-option>
+                  <mat-option value="client">Cliente</mat-option>
+                  <mat-option value="barber">Barbero</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 items-end">
+          <mat-form-field class="flex-1">
+            <mat-label>Buscar productos</mat-label>
+            <input matInput [(ngModel)]="searchTerm" (input)="onSearchProducts()"
+              placeholder="Escribe para buscar productos...">
+            <mat-icon matPrefix>search</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="searchTerm && filteredProducts.length > 0" class="max-h-48 overflow-y-auto border rounded-lg">
+          <div *ngFor="let product of filteredProducts"
+            class="p-3 border-b hover:bg-gray-50 cursor-pointer flex justify-between items-center"
+            (click)="addProduct(product)">
+            <div>
+              <div class="font-medium">{{ product.name }}</div>
+              <div class="text-sm text-gray-600">{{ product.description }}</div>
+            </div>
+            <mat-icon class="text-green-600">add_circle</mat-icon>
+          </div>
+        </div>
+
+        <div *ngIf="searchTerm && filteredProducts.length === 0 && searchTerm.trim() !== ''"
+          class="text-center text-gray-500 py-4">
+          No se encontraron productos
+        </div>
+
+        
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <div class="flex justify-end p-2 gap-3 mt-8">
+    <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
+    <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading" (click)="onSave()">
+      {{ data ? 'Guardar Cambios' : 'Crear Servicio' }}
+    </button>
+  </div>
+
+</mat-dialog-actions>

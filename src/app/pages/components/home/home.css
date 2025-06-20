@@ -1,0 +1,29 @@
+.sidenav-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #eee;
+}
+
+.sidenav {
+  @media (max-width: 768px) {
+    width: 100% !important;
+  }
+}
+
+::ng-deep .mat-expansion-indicator {
+  color: white !important;
+  fill: white !important;
+}
+
+::ng-deep .mat-expansion-indicator svg {
+  fill: white !important;
+}
+
+.a-h:hover{
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.07) !important;
+  cursor: pointer;
+}

@@ -1,0 +1,101 @@
+<div>
+    <div class="mb-5 relative">
+        <h1 class="!text-xl !font-bold primary">Ventas</h1>
+        <p class="!text-gray-600 max-w-[50%]">Administra las ventas</p>
+        <button matButton="filled" class="!rounded-md !absolute top-2 right-2" (click)="openSaleModal()">
+            <mat-icon class="!text-white">add</mat-icon> Nueva
+        </button>
+    </div>
+
+    <mat-spinner *ngIf="isLoading" diameter="25" class="!absolute"></mat-spinner>
+    <div>
+        <div>
+            <input #fileInput type="file" accept=".xlsx,.xls" style="display: none;" (change)="importFromExcel($event)">
+            <ng-template #nameCell2 let-element="element">
+                <div class="flex items-center">
+                    <span>{{ element?.name }}</span>
+                    <mat-icon *ngIf="element?.isNew" class="ml-2 text-green-500" matTooltip="recién importada">
+                        new_releases
+                    </mat-icon>
+                </div>
+            </ng-template>
+        </div>
+
+        <div>
+            <div class="flex justify-end items-center gap-2 mb-2">
+                <mat-form-field *ngIf="viewSearch" class="min">
+                    <input matInput type="search" [(ngModel)]="result.global" (input)="loadData()"
+                        (change)="loadData()">
+                    <button matSuffix mat-icon-button aria-label="Search">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </mat-form-field>
+                <mat-icon [ngClass]="viewSearch ? 'primary' : ''" class="cursor-pointer" matTooltip="Buscar"
+                    (click)="viewSearch = !viewSearch">search</mat-icon>
+                <mat-icon class="cursor-pointer" [ngClass]="viewFilters ? '!text-slate-500' : ''" matTooltip="Filtrar"
+                    (click)="viewFilters = !viewFilters">filter_list</mat-icon>
+                <mat-icon class="cursor-pointer" matTooltip="Cambiar Espaciado"
+                    (click)="tooglePMode()">line_weight</mat-icon>
+                <mat-icon class="cursor-pointer" matTooltip="Columnas visibles"
+                    [matMenuTriggerFor]="menuColumn">view_column</mat-icon>
+                <mat-icon [matMenuTriggerFor]="menuExcel"  class="cursor-pointer" matTooltip="Excel">bar_chart</mat-icon>
+            </div>
+            <mat-menu #menuColumn="matMenu">
+                <div (click)="onDivClick($event)" class="p-4 flex flex-col gap-4 justify-end">
+                    <div class="!font-light primary text-right cursor-pointer" (click)="viewAllColumns()">ver todo</div>
+                    <div class="flex items-center gap-2 justify-between" *ngFor="let header of result.headers">
+                        <span>{{header.name}}</span>
+                        <mat-slide-toggle [(ngModel)]="header.show" />
+                    </div>
+                </div>
+            </mat-menu>
+            <mat-menu #menuExcel="matMenu">
+                <div (click)="onDivClick($event)">
+                    <button mat-menu-item (click)="exportToExcel()">
+                        <mat-icon >file_download</mat-icon>
+                        Exportar a
+                        Excel
+                    </button>
+                    <button mat-menu-item (click)="fileInput.click()">
+                        <mat-icon >file_upload</mat-icon>
+                        Importar desde
+                        Excel
+                    </button>
+                    <button mat-menu-item (click)="openImportHelpModal()">
+                        <mat-icon>help_outline</mat-icon>
+                        ¿Cómo importar?
+                    </button>
+                </div>
+            </mat-menu>
+            <div class="overflow-x-auto">
+
+                <app-smart-table [headers]="result.headers" [data]="data" [pageSize]="pageSize"
+                    (editItem)="onEditSale($event)" [pageIndex]="pageIndex" [sortColumn]="sortColumn"
+                    [sortDirection]="sortDirection" (deleteItem)="onDeleteSale($event)" [loading]="isLoading"
+                    [pMode]="pMode" [showFilters]="viewFilters"
+                    (sortChange)="onSortChange($event)" (pageChange)="onPageChange($event)"
+                    [cellTemplates]="cellTemplates" (globalFilterChange)="onGlobalChange($event)"
+                    (filtersChange)="loadData()">
+                </app-smart-table>
+
+                <ng-template #durationCell let-item="item" let-header="header">
+                    ⏱️ {{ formatDuration(item.duration_minutes) }}
+                </ng-template>
+
+                <ng-template #priceCell let-item="item" let-header="header">
+                    ${{ item.price }}
+                </ng-template>
+
+            </div>
+            <div>
+                <mat-paginator [length]="data.length" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                    (page)="onPageChange($event)" [showFirstLastButtons]="true" [pageSizeOptions]="[5, 10, 20, 50, 100]"
+                    aria-label="Select page">
+                </mat-paginator>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>

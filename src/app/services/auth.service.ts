@@ -38,6 +38,7 @@ export class AuthService {
               uuid: response.uuid,
               fullName: response.name + " " + response.lastname,
               username: response.username,
+              barbershop_uuid: response.barbershop_uuid,
             }
             localStorage.setItem('ampirux_user', JSON.stringify(user));
             this.currentUserSubject.next(user);

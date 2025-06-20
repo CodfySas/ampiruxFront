@@ -1,0 +1,33 @@
+<form [formGroup]="formGroup">
+  <div class="flex flex-col md:flex-row">
+    <mat-form-field [subscriptSizing]="'dynamic'" class="flex-auto mb-2 md:mr-2">
+      <mat-label>Search</mat-label>
+      <input [formControl]="searchCtr" matInput/>
+    </mat-form-field>
+    <mat-form-field [subscriptSizing]="'dynamic'" class="flex-auto mb-2 md:mr-2">
+      <mat-label>Order</mat-label>
+      <mat-select [formControl]="orderTypeCtr">
+        <mat-option>--</mat-option>
+        @for (orderType of OrderType | keyvalue; track orderType.key) {
+          <mat-option [value]="orderType.key">{{ orderType.value }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field [subscriptSizing]="'dynamic'" class="flex-auto mb-2 md:mr-2">
+      <mat-label>Discount</mat-label>
+      <mat-select [formControl]="isDiscountApplicableCtr">
+        <mat-option>--</mat-option>
+        <mat-option [value]="true">Yes</mat-option>
+        <mat-option [value]="false">No</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field [subscriptSizing]="'dynamic'" class="flex-auto mb-2 md:mr-2">
+      <mat-label>Priority</mat-label>
+      <mat-select [formControl]="isPriorityCtr">
+        <mat-option>--</mat-option>
+        <mat-option [value]="true">Yes</mat-option>
+        <mat-option [value]="false">No</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</form>

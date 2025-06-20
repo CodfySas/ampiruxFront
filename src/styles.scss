@@ -1,0 +1,42 @@
+@use "tailwindcss";
+@use './custom-theme.scss' as *;
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.primary {
+  color: #7524b9
+}
+
+.bg-primary {
+  background-color: #7524b9 !important;
+}
+
+.text-subcard {
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+}
+
+.min {
+  height: 30px !important;
+}
+
+.mat-mdc-form-field-flex {
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+th {
+  vertical-align: baseline;
+}

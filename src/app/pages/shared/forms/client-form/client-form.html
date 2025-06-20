@@ -1,0 +1,68 @@
+<mat-dialog-content class="flex flex-col gap-4 p-2 relative">
+    <mat-spinner *ngIf="isLoading" diameter="40"
+        class="!absolute !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2 z-100"></mat-spinner>
+    <div class="!text-2xl !text-purple-700 !p-2 flex flex-col gap-3 ">
+        {{ data?.uuid ? 'Editar Cliente' : 'Nuevo Cliente' }}
+        <mat-divider></mat-divider>
+    </div>
+    <div class="flex flex-wrap gap-5" [ngClass]="isLoading ? 'opacity-50' : ''">
+        <div class="w-full md:w-[47%]">
+            <label class="mb-1 text-xs text-gray-600">Identificación <span class="text-red-500">*</span></label>
+            <mat-form-field class="w-full">
+                <input matInput required [(ngModel)]="new.dni" type="number" placeholder="Número de identificación">
+            </mat-form-field>
+        </div>
+        <div class="w-full md:w-[47%]">
+            <label class="mb-1 text-xs text-gray-600">Nombre del Cliente <span class="text-red-500">*</span></label>
+            <mat-form-field class="w-full">
+                <input matInput required [(ngModel)]="new.name" placeholder="Nombre completo">
+            </mat-form-field>
+        </div>
+        <div class="w-full md:w-[47%]">
+            <label class="mb-1 text-xs text-gray-600">Correo <span class="text-red-500">*</span></label>
+            <mat-form-field class="w-full">
+                <input matInput [(ngModel)]="new.email" placeholder="Correo electrónico">
+            </mat-form-field>
+        </div>
+        <div class="w-full md:w-[47%]">
+            <label class="mb-1 text-xs text-gray-600">Teléfono</label>
+            <mat-form-field class="w-full">
+                <input matInput [(ngModel)]="new.phone" placeholder="Número de contacto">
+            </mat-form-field>
+        </div>
+        <div class="w-full">
+            <label class="mb-1 text-xs text-gray-600">Notas</label>
+            <mat-form-field class="w-full">
+                <textarea matInput class="!resize-none" [(ngModel)]="new.notes"
+                    placeholder="Notas adicionales"></textarea>
+            </mat-form-field>
+        </div>
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <mat-icon class="text-blue-400">info</mat-icon>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">Campos necesarios para la facturación electrónica:</h3>
+                <div class="mt-1 text-sm text-blue-700">
+                    <ul class="list-disc ml-4 space-y-1">
+                        <li>Identificación</li>
+                        <li>Nombre</li>
+                        <li>Correo</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <div class="flex justify-end p-2 gap-3 mt-8">
+        <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
+        <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading" (click)="onSave()">
+            {{ data?.uuid ? 'Guardar Cambios' : 'Crear Cliente' }}
+        </button>
+    </div>
+
+</mat-dialog-actions>

@@ -1,0 +1,132 @@
+<div>
+    <div class="mb-5 relative">
+        <h1 class="!text-xl !font-bold primary">Productos</h1>
+        <p class="!text-gray-600 max-w-[50%]">Administra los productos de tu barberia</p>
+        <button matButton="filled" class="!rounded-md !absolute top-2 right-2" (click)="openProductModal()">
+            <mat-icon class="!text-white">add</mat-icon> Nuevo
+        </button>
+    </div>
+
+    <mat-spinner *ngIf="isLoading" diameter="25" class="!absolute"></mat-spinner>
+    <div>
+        <div class="flex flex-wrap gap-2 p-2 justify-center" *ngIf="viewStatistics">
+            <mat-card class="p-2 text-center relative overflow-hidden w-[45%] md:w-[22%]">
+                <app-card [lineClass]="'bg-green-700'" [label1]="'💰 $105.000'" [label2]="'Ventas del día'"></app-card>
+            </mat-card>
+        </div>
+
+        <div>
+            <input #fileInput type="file" accept=".xlsx,.xls" style="display: none;" (change)="importFromExcel($event)">
+            <ng-template #nameCell2 let-element="element">
+                <div class="flex items-center">
+                    <span>{{ element?.name }}</span>
+                    <mat-icon *ngIf="element?.isNew" class="ml-2 text-green-500" matTooltip="Producto recién importado">
+                        new_releases
+                    </mat-icon>
+                </div>
+            </ng-template>
+        </div>
+
+        <div>
+            <div class="flex justify-end items-center gap-2 mb-2">
+                <mat-form-field *ngIf="viewSearch" class="min">
+                    <input matInput type="search" [(ngModel)]="result.global" (input)="loadData()"
+                        (change)="loadData()">
+                    <button matSuffix mat-icon-button aria-label="Search">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </mat-form-field>
+                <mat-icon [ngClass]="viewSearch ? 'primary' : ''" class="cursor-pointer" matTooltip="Buscar"
+                    (click)="viewSearch = !viewSearch">search</mat-icon>
+                <mat-icon class="cursor-pointer" [ngClass]="viewFilters ? '!text-slate-500' : ''" matTooltip="Filtrar"
+                    (click)="viewFilters = !viewFilters">filter_list</mat-icon>
+                <mat-icon class="cursor-pointer" matTooltip="Ajustar stock"
+                    [ngClass]="viewEditStock ? '!text-amber-500' : ''"
+                    (click)="viewEditStock = !viewEditStock">dashboard_customize</mat-icon>
+                <mat-icon class="cursor-pointer" matTooltip="Cambiar Espaciado"
+                    (click)="tooglePMode()">line_weight</mat-icon>
+                <mat-icon class="cursor-pointer" matTooltip="Columnas visibles"
+                    [matMenuTriggerFor]="menuColumn">view_column</mat-icon>
+                <mat-icon [matMenuTriggerFor]="menuExcel"  class="cursor-pointer" matTooltip="Excel">bar_chart</mat-icon>
+
+                <!--<mat-icon class="cursor-pointer" matTooltip="Estadisticas"
+                    [ngClass]="viewStatistics ? '!text-green-600' : ''"
+                    (click)="viewStatistics = !viewStatistics">assessment</mat-icon>-->
+            </div>
+            <mat-menu #menuColumn="matMenu">
+                <div (click)="onDivClick($event)" class="p-4 flex flex-col gap-4 justify-end">
+                    <div class="!font-light primary text-right cursor-pointer" (click)="viewAllColumns()">ver todo</div>
+                    <div class="flex items-center gap-2 justify-between" *ngFor="let header of result.headers">
+                        <span>{{header.name}}</span>
+                        <mat-slide-toggle [(ngModel)]="header.show" />
+                    </div>
+                </div>
+            </mat-menu>
+            <mat-menu #menuExcel="matMenu">
+                <div (click)="onDivClick($event)">
+                    <button mat-menu-item (click)="exportToExcel()">
+                        <mat-icon >file_download</mat-icon>
+                        Exportar a
+                        Excel
+                    </button>
+                    <button mat-menu-item (click)="fileInput.click()">
+                        <mat-icon >file_upload</mat-icon>
+                        Importar desde
+                        Excel
+                    </button>
+                    <button mat-menu-item (click)="openImportHelpModal()">
+                        <mat-icon>help_outline</mat-icon>
+                        ¿Cómo importar?
+                    </button>
+                </div>
+            </mat-menu>
+            <div class="overflow-x-auto">
+
+                <app-smart-table [headers]="result.headers" [data]="products" [pageSize]="pageSize"
+                    (editItem)="onEditProduct($event)" [pageIndex]="pageIndex" [sortColumn]="sortColumn"
+                    [sortDirection]="sortDirection" (deleteItem)="onDeleteProduct($event)" [loading]="isLoading"
+                    [pMode]="pMode" [showFilters]="viewFilters" [showEditStock]="viewEditStock"
+                    (sortChange)="onSortChange($event)" (pageChange)="onPageChange($event)"
+                    [cellTemplates]="cellTemplates" (globalFilterChange)="onGlobalChange($event)"
+                    (filtersChange)="loadData()">
+                </app-smart-table>
+
+                <ng-template #codeCell let-item="item" let-header="header">
+                    <div class="absolute rounded-xl left-0 top-[10%] h-[80%] w-[3px]" [ngClass]="item.stock == null || item.stock == 0 ? 'bg-red-600' :
+                   item.stock < 10 ? 'bg-amber-400' : 'bg-green-600'">
+                    </div>
+                    {{ item.code }}
+                </ng-template>
+
+                <ng-template #priceCell let-item="item" let-header="header">
+                    ${{ item.price }}
+                </ng-template>
+
+                <ng-template #stockCell let-item="item" let-index="index" let-header="header">
+                    <div class="flex justify-end items-center gap-2">
+                        <button *ngIf="viewEditStock" [disabled]="!item.stock || item.stock == 0"
+                            (click)="updateStock(false, item)"
+                            class="w-8 h-8 flex items-center justify-center rounded-sm cursor-pointer border-purple-200 hover:border-purple-600 border-2">
+                            <mat-icon fontIcon="remove" class="primary"></mat-icon>
+                        </button>
+                        <label>{{ item.stock || 0 }}</label>
+                        <button *ngIf="viewEditStock" (click)="updateStock(true, item)"
+                            class="w-8 h-8 flex items-center justify-center rounded-sm cursor-pointer border-purple-200 hover:border-purple-600 border-2">
+                            <mat-icon fontIcon="add" class="primary"></mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+
+            </div>
+            <div>
+                <mat-paginator [length]="products.length" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                    (page)="onPageChange($event)" [showFirstLastButtons]="true" [pageSizeOptions]="[5, 10, 20, 50, 100]"
+                    aria-label="Select page">
+                </mat-paginator>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>

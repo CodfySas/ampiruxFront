@@ -1,0 +1,112 @@
+<div>
+    <div class="mb-5">
+        <h1 class="!text-xl !font-bold primary">Bienvenido a Ampirux</h1>
+        <p class="!text-gray-600">Resumen de tu barbería hoy</p>
+    </div>
+
+    <mat-spinner *ngIf="isLoading" diameter="15"></mat-spinner>
+    <div *ngIf="!isLoading">
+        <div class="flex flex-wrap gap-2 p-2 justify-center">
+            <!-- Tarjeta 1 -->
+            <mat-card class="p-5 text-center relative overflow-hidden w-[45%] md:w-[22%]">
+                <app-card [lineClass]="'bg-green-700'" [label1]="'💰 $105.000'" [label2]="'Ventas del día'"></app-card>
+            </mat-card>
+
+            <!-- Tarjeta 2 -->
+            <mat-card class="p-5 text-center relative overflow-hidden w-[45%] md:w-[22%]">
+                <app-card [lineClass]="'bg-red-700'" [label1]="'📉 $105.000'" [label2]="'Gastos del día'"></app-card>
+            </mat-card>
+
+            <!-- Tarjeta 3 -->
+            <mat-card class="p-5 text-center relative overflow-hidden w-[45%] md:w-[22%]">
+                <app-card [lineClass]="'bg-purple-700'" [label1]="'📅 7'" [label2]="'Citas Hoy'"></app-card>
+            </mat-card>
+
+            <!-- Tarjeta 4 -->
+            <mat-card class="p-5 text-center relative overflow-hidden w-[45%] md:w-[22%]">
+                <app-card [lineClass]="'bg-yellow-500'" [label1]="'⏳ 4'" [label2]="'Citas Pendientes'"></app-card>
+            </mat-card>
+        </div>
+        <div class="flex flex-wrap gap-2 p-2 justify-center">
+            <mat-card class="text-center relative overflow-hidden w-[90%] md:w-[45%] p-1">
+                <mat-card-header class="p-2 !font-bold text-lg">
+                    Top Ventas del día
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="flex flex-col gap-2 p-1">
+                        <div class="flex bg-gray-200 p-2 rounded gap-4 justify-start items-center">
+                            <div
+                                class="flex items-center justify-center w-8 h-8 rounded-full border bg-primary text-sm !text-white">
+                                1
+                            </div>
+                            <div class="flex flex-col text-left">
+                                <label class="font-semibold">Corte Clasico</label>
+                                <label class="text-sm text-gray-600">Prueba test test</label>
+                            </div>
+                        </div>
+                        <div class="flex bg-gray-200 p-2 rounded gap-4 justify-start items-center">
+                            <div
+                                class="flex items-center justify-center w-8 h-8 rounded-full border bg-primary text-sm !text-white">
+                                2
+                            </div>
+                            <div class="flex flex-col text-left">
+                                <label class="font-semibold">Barba + Bigote</label>
+                                <label class="text-sm text-gray-600">Cantidad: 3 | $45.000</label>
+                            </div>
+                        </div>
+                        <div class="flex bg-gray-200 p-2 rounded gap-4 justify-start items-center">
+                            <div
+                                class="flex items-center justify-center w-8 h-8 rounded-full border bg-primary text-sm !text-white">
+                                3
+                            </div>
+                            <div class="flex flex-col text-left">
+                                <label class="font-semibold">Shampoo Premium</label>
+                                <label class="text-sm text-gray-600">Cantidad: 2 | $24.000</label>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <mat-card class="text-center relative overflow-hidden w-[90%] md:w-[45%]">
+                <mat-card-header class="p-2 !font-bold text-lg">
+                    Citas de Hoy
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="flex flex-col gap-2 p-1">
+                        <div class="flex bg-gray-200 p-2 rounded gap-4 justify-start items-center">
+                            <div class="flex items-center justify-center text-sm primary">
+                                09:00
+                            </div>
+                            <div class="flex flex-col text-left gap-1">
+                                <label class="font-semibold">Juan Pérez</label>
+                                <label class="text-sm text-gray-600">Corte + Barba</label>
+                                <span class="text-xs px-1 bg-primary w-min rounded-full !text-white">Confirmada</span>
+                            </div>
+                        </div>
+                        <div class="flex bg-gray-200 p-2 rounded gap-4 justify-start items-center">
+                            <div class="flex items-center justify-center text-sm primary">
+                                10:30
+                            </div>
+                            <div class="flex flex-col text-left gap-1">
+                                <label class="font-semibold">Carlos López</label>
+                                <label class="text-sm text-gray-600">Corte Clásico</label>
+                                <span class="text-xs px-1 bg-yellow-500 w-min rounded-full !text-white">Pendiente</span>
+                            </div>
+                        </div>
+                        <div class="flex bg-gray-200 p-2 rounded gap-4 justify-start items-center">
+                            <div class="flex items-center justify-center text-sm primary">
+                                14:00
+                            </div>
+                            <div class="flex flex-col text-left gap-1">
+                                <label class="font-semibold">Miguel Rodríguez</label>
+                                <label class="text-sm text-gray-600">Barba + Bigote</label>
+                                <span class="text-xs px-1 bg-primary w-min rounded-full !text-white">Confirmada</span>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+
+</div>

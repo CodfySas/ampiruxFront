@@ -1,0 +1,27 @@
+<mat-dialog-content class="flex flex-col gap-4 p-2 relative">
+  <mat-spinner *ngIf="isLoading" diameter="40"
+    class="!absolute !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2 z-100"></mat-spinner>
+  <div class="!text-2xl !text-purple-700 !p-2 flex flex-col gap-3 ">
+    {{ data ? 'Editar Categoría' : 'Nueva Categoría' }}
+    <mat-divider></mat-divider>
+  </div>
+  <div class="flex flex-wrap gap-5" [ngClass]="isLoading ? 'opacity-50' : ''">
+    <div class="w-full md:w-[47%]">
+      <label class="mb-1 text-xs text-gray-600">Nombre de la categoría <span class="text-red-500">*</span></label>
+      <mat-form-field class="w-full">
+        <input matInput required [(ngModel)]="new.name" placeholder="Ej: Cuidado capilar">
+      </mat-form-field>
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <div class="flex justify-end p-2 gap-3 mt-8">
+    <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
+    <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading" (click)="onSave()">
+      {{ data ? 'Guardar Cambios' : 'Crear Categoría' }}
+    </button>
+  </div>
+
+</mat-dialog-actions>

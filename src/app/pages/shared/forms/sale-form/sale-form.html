@@ -1,0 +1,275 @@
+<mat-dialog-content class="flex flex-col gap-4 p-2 relative ">
+    <mat-spinner *ngIf="isLoading" diameter="40"
+        class="!absolute !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2 z-100"></mat-spinner>
+    <div class="!text-2xl !text-purple-700 !p-2 flex flex-col gap-3 ">
+        {{ data ? 'Editar Venta' : 'Nueva Venta' }}
+        <mat-divider></mat-divider>
+    </div>
+    <div class="mt-3" [ngClass]="isLoading ? 'opacity-50' : ''">
+        <h1 class="primary !text-lg">Información general</h1>
+        <div class="flex flex-wrap gap-5 p-3">
+            <!-- set client -->
+            <div class="w-full md:w-[46%]">
+                <p class="mb-1 primary" *ngIf="!clientResult">Cliente</p>
+                <div class="flex gap-2 w-full">
+                    <mat-form-field class="min w-full" *ngIf="!clientResult">
+                        <input matInput [(ngModel)]="searchDni" (input)="onSearchDni()" [matAutocomplete]="clientAuto"
+                            placeholder="Cédula del cliente" name="searchClient">
+                        <mat-icon matPrefix>search</mat-icon>
+                        <mat-autocomplete #clientAuto="matAutocomplete">
+                            <mat-option *ngIf="searchDni && searchDni != '' && !isExistingClient()" [value]="null"
+                                (onSelectionChange)="openClientForm()">
+                                <div class="flex items-center gap-2 text-blue-600">
+                                    <mat-icon>person_add</mat-icon>
+                                    <span>Crear cliente con cédula: <strong>{{ searchDni }}</strong></span>
+                                </div>
+                            </mat-option>
+
+                            <mat-option *ngFor="let client of filteredClients" [value]="client.dni"
+                                (click)="setClient(client)">
+                                <div class="flex flex-col">
+                                    <div class="font-medium">{{ client.name }}</div>
+                                    <div class="text-sm text-gray-600">{{ client.dni }}</div>
+                                </div>
+                            </mat-option>
+
+                            <mat-option *ngIf="filteredClients.length === 0 && searchDni && searchDni != ''" disabled>
+                                <div class="text-gray-500">No se encontraron clientes</div>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <div *ngIf="clientResult" class="w-full">
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg relative">
+                            <mat-icon class="!absolute top-1 right-1 cursor-pointer !text-sm"
+                                (click)="unsetClient()">close</mat-icon>
+                            <div class="flex items-center gap-2 text-blue-700 mb-2">
+                                <mat-icon class="text-blue-600">person</mat-icon>
+                                <span class="font-medium">Cliente seleccionado:</span>
+                            </div>
+                            <div class="text-xs text-blue-600">
+                                <div><strong>Nombre:</strong> {{ clientResult.name }}</div>
+                                <div><strong>Cédula:</strong> {{ clientResult.dni }}</div>
+                                <div *ngIf="clientResult?.email">
+                                    <strong>Correo:</strong> {{clientResult.email}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Set Barber-->
+            <div class="w-full md:w-[46%]">
+                <p class="mb-1 primary" *ngIf="!barberResult">Empleado</p>
+                <div class="flex gap-2 w-full">
+                    <mat-form-field class="min w-full" *ngIf="!barberResult">
+                        <input matInput [(ngModel)]="searchBarber" (input)="onSearchBarber()"
+                            [matAutocomplete]="barberAuto" placeholder="Cédula o nombre" name="searchBarber">
+                        <mat-icon matPrefix>search</mat-icon>
+                        <mat-autocomplete #barberAuto="matAutocomplete">
+                            <mat-option *ngIf="searchBarber && searchBarber != '' && !isExistingBarber()" [value]="null"
+                                (onSelectionChange)="openBarberForm()">
+                                <div class="flex items-center gap-2 text-blue-600">
+                                    <mat-icon>person_add</mat-icon>
+                                    <span>Crear empleado con cédula: <strong>{{ searchBarber }}</strong></span>
+                                </div>
+                            </mat-option>
+
+                            <mat-option *ngFor="let barber of filteredBarber" [value]="barber.dni"
+                                (click)="setBarber(barber)">
+                                <div class="flex flex-col">
+                                    <div class="font-medium">{{ barber.name }}</div>
+                                    <div class="text-sm text-gray-600">{{ barber.dni }}</div>
+                                </div>
+                            </mat-option>
+
+                            <mat-option *ngIf="filteredBarber.length === 0 && searchBarber && searchBarber != ''"
+                                disabled>
+                                <div class="text-gray-500">No se encontraron empleados</div>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <div *ngIf="barberResult" class="w-full">
+                        <div class="p-3 bg-green-50 border border-green-200 rounded-lg relative">
+                            <mat-icon class="!absolute top-1 right-1 cursor-pointer !text-sm"
+                                (click)="unsetBarber()">close</mat-icon>
+                            <div class="flex items-center gap-2 text-green-700 mb-2">
+                                <mat-icon class="text-green-600">design_services</mat-icon>
+                                <span class="font-medium">Empleado seleccionado:</span>
+                            </div>
+                            <div class="text-xs text-green-600">
+                                <div><strong>Nombre:</strong> {{ barberResult.name }}</div>
+                                <div><strong>Cédula:</strong> {{ barberResult.dni }}</div>
+                                <div *ngIf="barberResult?.email">
+                                    <strong>Correo:</strong> {{barberResult.email}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="flex justify-between my-5 w-full flex-wrap">
+            <div class="w-full md:w-[47%]">
+                <h1 class="primary !text-lg">Servicios</h1>
+            </div>
+            <div class="w-full md:w-[47%]">
+                <p class="mb-1 primary">Añadir servicio</p>
+                <div class="flex gap-2 w-full">
+                    <mat-form-field class="min w-full">
+                        <input matInput [(ngModel)]="searchService" (input)="onSearchService()"
+                            [matAutocomplete]="serviceAuto" placeholder="Busca el servicio" name="searchService">
+                        <mat-icon matPrefix>search</mat-icon>
+                        <mat-autocomplete #serviceAuto="matAutocomplete">
+                            <mat-option *ngFor="let service of filteredServices" class="!p-3"
+                                (click)="addService(service)">
+                                <div class="flex flex-col">
+                                    <div class="font-medium">{{ service.name }}</div>
+                                    <div class="text-sm text-green-600">{{ formatSalary(service.price) }}</div>
+                                </div>
+                            </mat-option>
+                            <mat-option *ngIf="filteredServices.length === 0 && searchService && searchService != ''"
+                                disabled>
+                                <div class="text-gray-500">No se encontraron servicios</div>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <div class="bg-slate-200 my-2 rounded-md p-2 gap-2">
+            <div *ngFor="let service of this.new.services; let i = index">
+                <div class="flex gap-2 p-2 items-center justify-between">
+                    <div class="w-full md:w-[35%]">
+                        <label class="font-bold !text-[16px] !text-black">{{service.service?.name}}</label>
+                    </div>
+                    <mat-form-field class="w-full  md:w-[50%]">
+                        <mat-label>Cantidad</mat-label>
+                        <mat-icon matPrefix>attach_money</mat-icon>
+                        <input matInput currencyMask [(ngModel)]="service.price" min="1">
+                    </mat-form-field>
+                    <div class="w-5">
+                        <mat-icon class="!text-red-700 ">delete</mat-icon>
+                    </div>
+
+                </div>
+                <div *ngIf="service.used_products && service.used_products.length > 0"
+                    class="p-2 bg-gray-50 my-2 rounded-md">
+                    <div class="flex my-2">
+                        <div class="w-full md:w-[47%]">
+                            <h1 class="primary !text-sm">Productos utilizados</h1>
+                        </div>
+                    </div>
+                    <div class="my-1 p-2" *ngFor="let up of service.used_products; let j = index">
+                        <label class="font-bold">{{up.product?.name}}</label>
+                        <div class="flex justify-between my-2 items-center">
+
+                            <div class="w-full md:w-[22%]">
+                                <label>cantidad</label>
+                                <mat-form-field class="min w-full">
+                                    <label matSuffix>{{up.unit}}&nbsp;&nbsp;</label>
+                                    <input matInput [(ngModel)]="up.quantity" type="number">
+                                </mat-form-field>
+                            </div>
+                            <div class="w-full md:w-[40%]">
+                                <label>¿Quién paga?</label>
+                                <mat-form-field class="w-full min">
+                                    <mat-select [(ngModel)]="up.cost_type">
+                                        <mat-option value="cortesy">Barbería (cortesía)</mat-option>
+                                        <mat-option value="client">Cliente</mat-option>
+                                        <mat-option value="barber">Barbero</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="w-5">
+                                <mat-icon class="!text-red-700 ">delete</mat-icon>
+                            </div>
+
+                        </div>
+                        <mat-divider *ngIf="j != (service.used_products?.length||0)-1"
+                            class="!border-gray-400 !w-[80%] !place-self-center"></mat-divider>
+                    </div>
+                </div>
+                <mat-divider *ngIf="i != (this.new.services?.length||0)-1"></mat-divider>
+            </div>
+            <label *ngIf="(this.new.services?.length||0)<=0" class="!text-[16px]">No se han agregado servicios</label>
+        </div>
+    </div>
+    <div class="flex flex-wrap gap-5" [ngClass]="isLoading ? 'opacity-50' : ''">
+    </div>
+    <br>
+    <mat-accordion class="mt-5">
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title> Productos incluidos ({{ new.sale_products?.length || 0 }}) </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="flex flex-col gap-4">
+                <div *ngIf="new.sale_products && new.sale_products.length > 0" class="mt-4">
+                    <h4 class="font-medium mb-3">Productos seleccionados:</h4>
+                    <div *ngFor="let defaultProduct of new.sale_products; let i = index"
+                        class="border rounded-lg p-4 mb-3 bg-gray-50">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="font-medium">{{ getProductName(defaultProduct.product_uuid!) }}</div>
+                            <button mat-icon-button color="warn" (click)="removeProduct(i)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <mat-form-field class="w-full">
+                                <mat-label>Cantidad</mat-label>
+                                <input matInput type="number" [(ngModel)]="defaultProduct.quantity" min="1">
+                                <span matSuffix>&nbsp; {{getProductUnit(defaultProduct.product_uuid!)}}&nbsp;</span>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-full">
+                                <mat-label>¿Quién paga?</mat-label>
+                                <mat-select [(ngModel)]="defaultProduct.cost_type">
+                                    <mat-option value="cortesy">Barbería (cortesía)</mat-option>
+                                    <mat-option value="client">Cliente</mat-option>
+                                    <mat-option value="barber">Barbero</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 items-end">
+                    <mat-form-field class="flex-1">
+                        <mat-label>Buscar productos</mat-label>
+                        <input matInput [(ngModel)]="searchTerm" (input)="onSearchProducts()"
+                            placeholder="Escribe para buscar productos...">
+                        <mat-icon matPrefix>search</mat-icon>
+                    </mat-form-field>
+                </div>
+
+                <div *ngIf="searchTerm && filteredProducts.length > 0"
+                    class="max-h-48 overflow-y-auto border rounded-lg">
+                    <div *ngFor="let product of filteredProducts"
+                        class="p-3 border-b hover:bg-gray-50 cursor-pointer flex justify-between items-center"
+                        (click)="addProduct(product)">
+                        <div>
+                            <div class="font-medium">{{ product.name }}</div>
+                            <div class="text-sm text-gray-600">{{ product.description }}</div>
+                        </div>
+                        <mat-icon class="text-green-600">add_circle</mat-icon>
+                    </div>
+                </div>
+
+                <div *ngIf="searchTerm && filteredProducts.length === 0 && searchTerm.trim() !== ''"
+                    class="text-center text-gray-500 py-4">
+                    No se encontraron productos
+                </div>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
+    <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading" (click)="onSave()">
+        {{ data ? 'Guardar Cambios' : 'Crear Venta' }}
+    </button>
+</mat-dialog-actions>

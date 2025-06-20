@@ -1,0 +1,43 @@
+<table class="!bg-gray-50 !text-sm w-full rounded-xl">
+    <tr class="border-b border-b-gray-400">
+        <ng-container *ngFor="let header of headers">
+            <th *ngIf="header.show" [ngClass]="'p-' + pMode">
+                <app-table-sort-header *ngIf="header.canSort" [label]="header.name" [column]="header.key"
+                    [active]="sortColumn === header.key" [direction]="sortDirection"
+                    (sortChange)="onSortChange($event)">
+                </app-table-sort-header>
+                <label *ngIf="!header.canSort">{{header.name}}</label>
+                <div *ngIf="showFilters && header.canFilter">
+                    <mat-form-field class="max-w-30 min">
+                        <input matInput type="search" [(ngModel)]="header.filter" (input)="filtersChange.emit()"
+                            (change)="filtersChange.emit()">
+                    </mat-form-field>
+                </div>
+            </th>
+        </ng-container>
+        <!-- Acciones u otros -->
+        <th [ngClass]="'p-' + pMode" *ngIf="headers[0].show"></th>
+        <th [ngClass]="'p-' + pMode" *ngIf="headers[0].show"></th>
+    </tr>
+
+    <tr class="border-b border-b-gray-300" *ngFor="let item of data; let index = index">
+        <ng-container *ngFor="let header of headers">
+            <td *ngIf="header.show" [ngClass]="'p-' + pMode + ' ' + header.class">
+                <ng-container *ngIf="cellTemplates?.[header.key]; else defaultCell"
+                    [ngTemplateOutlet]="cellTemplates![header.key]"
+                    [ngTemplateOutletContext]="{ item: item, header: header }">
+                </ng-container>
+
+                <ng-template #defaultCell>
+                    {{ getValueByPath(item, header.key) }}
+                </ng-template>
+            </td>
+        </ng-container>
+        <td [ngClass]="'p-' + pMode" *ngIf="headers[0].show">
+            <mat-icon class="primary cursor-pointer" (click)="onEditItem(item)">edit</mat-icon>
+        </td>
+        <td [ngClass]="'p-' + pMode" *ngIf="headers[0].show">
+            <mat-icon class="!text-red-700 cursor-pointer" (click)="onDeleteItem(item)">delete</mat-icon>
+        </td>
+    </tr>
+</table>

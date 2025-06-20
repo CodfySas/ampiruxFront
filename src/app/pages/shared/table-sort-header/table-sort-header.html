@@ -1,0 +1,6 @@
+<div class="flex items-center gap-2 cursor-pointer justify-center" (click)="onToggleSort()">
+    {{ label }}
+    <mat-icon *ngIf="active && direction === 'asc'" class="primary">arrow_upward</mat-icon>
+    <mat-icon *ngIf="active && direction === 'desc'" class="primary">arrow_downward</mat-icon>
+    <mat-icon *ngIf="!active" class="!text-neutral-300">swap_vert</mat-icon>
+</div>

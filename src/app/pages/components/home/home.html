@@ -1,1 +1,137 @@
-<p>home works!</p>
+<mat-sidenav-container class="sidenav-container h-screen">
+  <!-- Sidebar -->
+  <mat-sidenav #sidenav [mode]="isLargeScreen ? 'side' : 'over'" [opened]="isLargeScreen ? true : sidenavOpened"
+    [fixedInViewport]="!isLargeScreen" class="!rounded-none !w-64 sidenav relative bg-primary">
+    <button *ngIf="!isLargeScreen" mat-icon-button class="!absolute top-2 right-2 !text-white"
+      (click)="toggleSidenav()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <div class="w-full bg-primary p-5">
+      <h1 class="font-bold text-2xl !text-yellow-400 mb-2">Ampirux</h1>
+      <mat-divider></mat-divider>
+
+      <div class="mt-10 !text-white !font-thin">
+        <ul class="flex flex-col gap-5">
+          <li>
+            <a routerLink="/" routerLinkActive="!bg-purple-800 !text-white" [routerLinkActiveOptions]="{exact: true}"
+              class="flex items-center gap-3 p-2 a-h rounded hover:bg-yellow-700 transition-colors">
+              <span>🏠</span> Inicio
+            </a>
+          </li>
+          <li>
+            <mat-accordion class="!p-0">
+              <mat-expansion-panel class="!p-0 !bg-transparent !shadow-none">
+                <mat-expansion-panel-header [ngClass]="getAccordionHeaderClass('gestion')">
+                  <mat-panel-title class="flex items-center gap-3 !text-white !font-thin">
+                    <span>🗃️</span> Gestión
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ul class="flex flex-col gap-3 !text-white !font-thin mt-5">
+                  <li>
+                    <a routerLink="/appointments" routerLinkActive="!bg-purple-800 !text-white"
+                      class="flex items-center gap-3 a-h p-2 rounded hover:bg-yellow-700 transition-colors">
+                      <span>📅</span> Citas
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/clients" routerLinkActive="!bg-purple-800 !text-white"
+                      class="flex items-center gap-3 a-h p-2 rounded hover:bg-yellow-700 transition-colors">
+                      <span>👥</span> Clientes
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/employees" routerLinkActive="!bg-purple-800 !text-white"
+                      class="flex items-center gap-3 a-h p-2 rounded hover:bg-yellow-700 transition-colors">
+                      <span>👨‍💼</span> Empleados
+                    </a>
+                  </li>
+                </ul>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </li>
+          <li>
+            <mat-accordion class="!p-0">
+              <mat-expansion-panel class="!p-0 !bg-transparent !shadow-none">
+                <mat-expansion-panel-header [ngClass]="getAccordionHeaderClass('catalogo')">
+                  <mat-panel-title class="flex items-center gap-3 !text-white !font-thin">
+                    <span>🛍️</span> Catálogo
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <ul class="flex flex-col gap-3 !text-white !font-thin mt-5">
+                  <li>
+                    <a routerLink="/services" routerLinkActive="!bg-purple-800 !text-white"
+                      class="flex items-center gap-3 a-h p-2 rounded hover:bg-yellow-700 transition-colors">
+                      <span>✂️</span> Servicios
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/products" routerLinkActive="!bg-purple-800 !text-white"
+                      class="flex items-center gap-3 a-h p-2 rounded hover:bg-yellow-700 transition-colors">
+                      <span>🧴</span> Productos
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/categories" routerLinkActive="!bg-purple-800 !text-white"
+                      class="flex items-center gap-3 a-h p-2 rounded hover:bg-yellow-700 transition-colors">
+                      <span>🏷️</span> Categorias
+                    </a>
+                  </li>
+                </ul>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </li>
+          <li>
+            <a routerLink="/sales" routerLinkActive="!bg-purple-800 !text-white"
+              class="flex items-center gap-3 p-2 a-h rounded hover:bg-yellow-700 transition-colors">
+              <span>💰</span> Ventas
+            </a>
+          </li>
+          <li>
+            <a routerLink="/cash" routerLinkActive="!bg-purple-800 !text-white"
+              class="flex items-center gap-3 p-2 a-h rounded hover:bg-yellow-700 transition-colors">
+              <span>📊</span> Contaduría
+            </a>
+          </li>
+          <li>
+            <a routerLink="/reports" routerLinkActive="!bg-purple-800 !text-white"
+              class="flex items-center gap-3 p-2 a-h rounded hover:bg-yellow-700 transition-colors">
+              <span>📈</span> Reportes
+            </a>
+          </li>
+          <li>
+            <a routerLink="/admin" routerLinkActive="!bg-purple-800 !text-white"
+              class="flex items-center gap-3 p-2 a-h rounded hover:bg-yellow-700 transition-colors">
+              <span>⚙️</span> Administración
+            </a>
+          </li>
+        </ul>
+      </div>
+      <br>
+      <br>
+      <br>
+      <div class="align-left">
+        <button mat-icon-button (click)="logout()" class="!text-white !text-sm !w-full !text-left">
+          🔚 Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="relative">
+    <div class="flex items-center justify-between p-4 bg-white shadow-sm">
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center">
+          <button *ngIf="!isLargeScreen" mat-icon-button (click)="toggleSidenav()">
+            <mat-icon>menu</mat-icon>
+          </button>
+          <h2 class="text-xl font-semibold ml-2">{{ getCurrentModule() }}</h2>
+        </div>
+        <span class="user-name">{{ currentUser?.fullName }}</span>
+      </div>
+    </div>
+
+    <div class="p-4">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

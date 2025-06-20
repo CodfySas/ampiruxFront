@@ -1,0 +1,161 @@
+<div>
+    <div class="mb-5 relative">
+        <h1 class="!text-xl !font-bold primary">Clientes</h1>
+        <p class="!text-gray-600 max-w-[50%]">Administra los clientes</p>
+        <button matButton="filled" class="!rounded-md !absolute top-2 right-2" (click)="openClientModal()">
+            <mat-icon class="!text-white">add</mat-icon> Nuevo
+        </button>
+    </div>
+
+    <mat-spinner *ngIf="isLoading" diameter="25" class="!absolute"></mat-spinner>
+    <div>
+        <div>
+            <input #fileInput type="file" accept=".xlsx,.xls" style="display: none;" (change)="importFromExcel($event)">
+            <ng-template #nameCell2 let-element="element">
+                <div class="flex items-center">
+                    <span>{{ element?.name }}</span>
+                    <mat-icon *ngIf="element?.isNew" class="ml-2 text-green-500" matTooltip="recién importada">
+                        new_releases
+                    </mat-icon>
+                </div>
+            </ng-template>
+        </div>
+
+        <div>
+            <div class="flex justify-end items-center gap-2 mb-2">
+                <mat-form-field *ngIf="viewSearch" class="min">
+                    <input matInput type="search" [(ngModel)]="result.global" (input)="loadData()"
+                        (change)="loadData()">
+                    <button matSuffix mat-icon-button aria-label="Search">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </mat-form-field>
+                <mat-icon [ngClass]="viewSearch ? 'primary' : ''" class="cursor-pointer" matTooltip="Buscar"
+                    (click)="viewSearch = !viewSearch">search</mat-icon>
+                <mat-icon *ngIf="!view" class="cursor-pointer" [ngClass]="viewFilters ? '!text-slate-500' : ''"
+                    matTooltip="Filtrar" (click)="viewFilters = !viewFilters">filter_list</mat-icon>
+                <mat-icon *ngIf="!view" class="cursor-pointer" matTooltip="Cambiar Espaciado"
+                    (click)="tooglePMode()">line_weight</mat-icon>
+                <mat-icon *ngIf="!view" class="cursor-pointer" matTooltip="Columnas visibles"
+                    [matMenuTriggerFor]="menuColumn">view_column</mat-icon>
+                <mat-icon [matMenuTriggerFor]="menuExcel" class="cursor-pointer" matTooltip="Excel">bar_chart</mat-icon>
+                <mat-icon class="cursor-pointer" matTooltip="Cambiar vista" (click)="changeView()">dashboard</mat-icon>
+            </div>
+            <mat-menu #menuColumn="matMenu">
+                <div (click)="onDivClick($event)" class="p-4 flex flex-col gap-4 justify-end">
+                    <div class="!font-light primary text-right cursor-pointer" (click)="viewAllColumns()">ver todo</div>
+                    <div class="flex items-center gap-2 justify-between" *ngFor="let header of result.headers">
+                        <span>{{header.name}}</span>
+                        <mat-slide-toggle [(ngModel)]="header.show" />
+                    </div>
+                </div>
+            </mat-menu>
+            <mat-menu #menuExcel="matMenu">
+                <div (click)="onDivClick($event)">
+                    <button mat-menu-item (click)="exportToExcel()">
+                        <mat-icon>file_download</mat-icon>
+                        Exportar a
+                        Excel
+                    </button>
+                    <button mat-menu-item (click)="fileInput.click()">
+                        <mat-icon>file_upload</mat-icon>
+                        Importar desde
+                        Excel
+                    </button>
+                    <button mat-menu-item (click)="openImportHelpModal()">
+                        <mat-icon>help_outline</mat-icon>
+                        ¿Cómo importar?
+                    </button>
+                </div>
+            </mat-menu>
+            <div class="overflow-x-auto">
+
+                <app-smart-table *ngIf="!view" [headers]="result.headers" [data]="data" [pageSize]="pageSize"
+                    (editItem)="onEditClient($event)" [pageIndex]="pageIndex" [sortColumn]="sortColumn"
+                    [sortDirection]="sortDirection" (deleteItem)="onDeleteClient($event)" [loading]="isLoading"
+                    [pMode]="pMode" [showFilters]="viewFilters" (sortChange)="onSortChange($event)"
+                    (pageChange)="onPageChange($event)" [cellTemplates]="cellTemplates"
+                    (globalFilterChange)="onGlobalChange($event)" (filtersChange)="loadData()">
+                </app-smart-table>
+
+                <div class="flex w-full gap-5 p-2 flex-wrap" *ngIf="view">
+                    <mat-card *ngFor="let client of data"
+                        class="p-4 !bg-white !border-l-5 !border-l-purple-600 w-auto w-full sm:w-[46%] lg:w-[31%]">
+                        <div class="flex gap-3 justify-between mb-2">
+                            <div>
+                                <div class="flex gap-3 mb-2 items-center w-full">
+                                    <div class="w-auto">
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold uppercase">
+                                            {{ getInitials(client.name || "") }}
+                                        </div>
+                                    </div>
+                                    <p class="!text-sm">{{client.name}}</p>
+                                </div>
+
+                                <p *ngIf="client.phone && client.phone != ''" class="!text-xs !text-gray-600">
+                                    📞 {{client.phone}}</p>
+                                <p *ngIf="client.email && client.email != ''"
+                                    class="!text-xs !text-gray-600 !break-all">
+                                    ✉️ {{client.email}}</p>
+                            </div>
+                            <div class="flex items-center gap-[5px]">
+                                <mat-icon class="!text-gray-600 !text-[18px]">history</mat-icon>
+                                <mat-icon class="primary !text-[18px] !cursor-pointer"
+                                    (click)="onEditClient(client)">edit</mat-icon>
+                                <mat-icon class="!text-red-600 !text-[18px] !cursor-pointer"
+                                    (click)="onDeleteClient(client)">delete</mat-icon>
+                            </div>
+                        </div>
+                        <div class="gap-2 flex flex-wrap">
+                            <div
+                                class="w-full sm:w-[100%] lg:w-[40%] p-3 w-auto !bg-slate-100 rounded-md flex items-center justify-between">
+                                <label class="!text-gray-500 !font-bold !text-xs">Visitas:</label>
+                                <label class="!font-bold !text-xs">100</label>
+                            </div>
+                            <div
+                                class="w-full sm:w-[100%] lg:w-[54%] p-3 w-auto !bg-slate-100 rounded-md flex items-center justify-between">
+                                <label class="!text-gray-500 !font-bold !text-xs">Total Gastado:</label>
+                                <label class="!font-bold !text-xs">$1.176.000</label>
+                            </div>
+                            <div
+                                class="w-full sm:w-[100%] lg:w-[43%] p-3 w-auto !bg-slate-100 rounded-md flex items-center justify-between">
+                                <label class="!text-gray-500 !font-bold !text-xs">Ultima visita:</label>
+                                <label class="!font-bold !text-xs">13 jun 2025</label>
+                            </div>
+                            <div
+                                class="w-full sm:w-[100%] lg:w-[51%] p-3 w-auto !bg-slate-100 rounded-md flex items-center justify-between">
+                                <label class="!text-gray-500 !font-bold !text-xs">Técnico preferido:</label>
+                                <label class="!font-bold !text-xs">Edwin Sanjuan</label>
+                            </div>
+                            <div *ngIf="client.notes != '' && client.notes"
+                                class=" border-l-3 border-l-slate-400 w-full p-3 w-auto gap-2 !bg-slate-100 rounded-md flex items-center">
+                                <label class="!font-bold !text-xs">Notas:</label>
+                                <label class="!text-gray-500 !font-bold !text-xs">{{client.notes}}</label>
+                            </div>
+                        </div>
+                        <div class="flex p-5 gap-4 mt-auto items-center justify-center">
+                            <button matButton="filled" class="!rounded-md !p-0 !h-8">
+                                <span class="!text-xs">📅 Cita</span>
+                            </button>
+                            <button matButton="filled" class="!bg-amber-400 !rounded-md !text-xs !p-0 !h-8">
+                                💰 Venta
+                            </button>
+
+                        </div>
+                    </mat-card>
+                </div>
+
+            </div>
+            <div>
+                <mat-paginator [length]="data.length" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                    (page)="onPageChange($event)" [showFirstLastButtons]="true" [pageSizeOptions]="[5, 10, 20, 50, 100]"
+                    aria-label="Select page">
+                </mat-paginator>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
