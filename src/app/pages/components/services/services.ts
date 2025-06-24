@@ -113,6 +113,7 @@ export class Services implements OnInit, AfterViewInit {
 
   pageSize = 20;
   pageIndex = 0;
+  pageLe = 0;
 
   data: Service[] = []
 
@@ -178,6 +179,7 @@ export class Services implements OnInit, AfterViewInit {
         this.data = res.content;
         this.pageSize = res.size;
         this.pageIndex = res.number;
+        this.pageLe = res.total_elements;
       });
   }
 
@@ -248,6 +250,7 @@ export class Services implements OnInit, AfterViewInit {
   openServiceModal(item?: Service) {
     const ref = this.dialog.open(ServiceForm, {
       width: '600px',
+      height: '90vh',
       data: item ?? null
     });
 

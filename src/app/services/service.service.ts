@@ -49,4 +49,16 @@ export class ServiceService {
       `${this.apiUrl}/v1/services`, service
     );
   }
+
+  getServicesClient(barbershop_uuid: string): Observable<Page<Service>> {
+  
+    return this.http.get<Page<Service>>(
+      `${this.apiUrl}/barber-shops/services`,
+      {
+        headers: {
+          barbershop_uuid: barbershop_uuid || ''
+        }
+      }
+    );
+  }
 }

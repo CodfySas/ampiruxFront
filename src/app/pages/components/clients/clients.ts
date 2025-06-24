@@ -12,6 +12,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../../../material/material-module';
 import { SmartTable } from '../../shared/smart-table/smart-table';
 import { ExcelColumn, ExcelService } from '../../../services/excel.service';
+import { SaleForm } from '../../shared/forms/sale-form/sale-form';
 
 @Component({
   selector: 'app-clients',
@@ -130,6 +131,7 @@ export class Clients implements OnInit, AfterViewInit {
 
   pageSize = 20;
   pageIndex = 0;
+  pageLe = 0;
 
   data: Client[] = []
 
@@ -177,8 +179,8 @@ export class Clients implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     var savedView = localStorage.getItem("clients_view");
-    if(savedView) {
-      if(savedView == 'true'){
+    if (savedView) {
+      if (savedView == 'true') {
         this.view = true
       }
     }
@@ -201,6 +203,7 @@ export class Clients implements OnInit, AfterViewInit {
         this.data = res.content;
         this.pageSize = res.size;
         this.pageIndex = res.number;
+        this.pageLe = res.total_elements;
       });
   }
 
@@ -229,6 +232,32 @@ export class Clients implements OnInit, AfterViewInit {
 
     return result;
   }
+
+  formatSalary(value: any): string {
+    if (value == null) return '$0';
+    return '$' + value.toLocaleString('es-CO');
+  }
+
+  formatDate(value: any): string {
+    if (value == null) return '';
+    const date = new Date(value);
+    return `${date.toLocaleDateString('es-CO')}`;
+  }
+
+  openSaleModal(client: Client) {
+    const ref = this.dialog.open(SaleForm, {
+      data: {
+        client: client,
+        client_uuid: client.uuid
+      },
+      height: '90vh',
+    });
+
+    ref.afterClosed().subscribe(() => {
+      this.loadData();
+    })
+  }
+
 
   onEditClient(item: Client) {
     this.openClientModal(item);
@@ -381,9 +410,9 @@ export class Clients implements OnInit, AfterViewInit {
     const separate = name.split(" ")
     let result = ''
     for (const word of separate) {
-      result += word.substring(0,1)
+      result += word.substring(0, 1)
     }
-    return result.substring(0,2);
+    return result.substring(0, 2);
   }
 
   changeView() {

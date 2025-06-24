@@ -10,9 +10,12 @@ import { Services } from './pages/components/services/services';
 import { Clients } from './pages/components/clients/clients';
 import { Barbers } from './pages/components/barbers/barbers';
 import { Sales } from './pages/components/sales/sales';
+import { Appointments } from './pages/components/appointments/appointments';
+import { Reserve } from './pages/shared/reserve/reserve';
 
 export const routes: Routes = [
     { path: 'login', component: Login, canActivate: [LoginGuard] },
+    { path: 'reserve/:id', component: Reserve },
     { path: '', component: Home, canActivate: [AuthGuard],
         children: [
             { path: '', component: Dashboard },
@@ -21,7 +24,8 @@ export const routes: Routes = [
             { path: 'services', component: Services },
             { path: 'clients', component: Clients },
             { path: 'employees', component: Barbers },
-            { path: 'sales', component: Sales }
+            { path: 'sales', component: Sales },
+            { path: 'appointments', component: Appointments }
         ]
     },
     { path: '**', redirectTo: '' }

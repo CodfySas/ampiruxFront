@@ -77,13 +77,22 @@ export class Products implements OnInit, AfterViewInit {
         class: 'text-right font-bold',
       },
       {
-        name: 'Unidad',
-        key: 'unit',
-        canFilter: true,
+        name: 'Contenido por unidad',
+        key: 'size_per_unit',
+        canFilter: false,
         canSort: true,
         filter: '',
         show: true,
-        class: '!text-gray-600',
+        class: 'text-right',
+      },
+      {
+        name: 'Unidad',
+        key: 'unit',
+        canFilter: false,
+        canSort: true,
+        filter: '',
+        show: true,
+        class: 'relative',
       },
       {
         name: 'Categoría',
@@ -134,6 +143,20 @@ export class Products implements OnInit, AfterViewInit {
       possibleKeys: ['Unidad', 'unidad', 'Unit', 'unit', 'UNIDAD']
     },
     {
+      key: 'size_per_unit',
+      label: 'Contenido por unidad',
+      required: false,
+      type: 'string',
+      possibleKeys: ['Contenido por unidad', 'Contenido', 'contenido por unidad', 'contenido']
+    },
+    {
+      key: 'remain_unit',
+      label: 'Restante ultimo envase',
+      required: false,
+      type: 'string',
+      possibleKeys: ['Restante ultimo envase', 'Restante', 'RESTANTE', 'remain', 'Remain']
+    },
+    {
       key: 'category',
       label: 'Categoría',
       required: false,
@@ -147,6 +170,7 @@ export class Products implements OnInit, AfterViewInit {
 
   pageSize = 20;
   pageIndex = 0;
+  pageLe = 0;
 
   products: Product[] = []
 
@@ -214,6 +238,7 @@ export class Products implements OnInit, AfterViewInit {
         this.products = res.content;
         this.pageSize = res.size;
         this.pageIndex = res.number;
+        this.pageLe = res.total_elements;
       });
   }
 
@@ -334,6 +359,8 @@ export class Products implements OnInit, AfterViewInit {
       'Precio': product.price || 0,
       'Stock': product.stock || 0,
       'Unidad': product.unit || '',
+      'Contenido por unidad': product.size_per_unit || 0,
+      'Restante ultimo envase': product.remain_unit || 0,
       'Categoría': this.getValueByPath(product, 'category.name') || ''
     }));
 
@@ -416,16 +443,20 @@ export class Products implements OnInit, AfterViewInit {
             'Descripción': 'Descripción del producto ejemplo',
             'Precio': 25.99,
             'Stock': 100,
-            'Unidad': 'pcs',
-            'Categoría': 'Categoría Ejemplo'
+            'Unidad': 'ml',
+            'Categoría': 'Categoría Ejemplo',
+            'Contenido por unidad': 300,
+            'Restante ultimo envase': 200,
           },
           {
             'Nombre': 'Producto Ejemplo 2',
             'Descripción': 'Otra descripción de ejemplo',
             'Precio': 15.50,
             'Stock': 50,
-            'Unidad': 'kg',
-            'Categoría': 'Otra Categoría'
+            'Unidad': 'gr',
+            'Categoría': 'Otra Categoría',
+            'Contenido por unidad': 500,
+            'Restante ultimo envase': 150,
           }
         ]
       }

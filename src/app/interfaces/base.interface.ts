@@ -7,7 +7,7 @@ export interface Base {
 
 export interface Page<T> {
   content: T[];
-  totalElements: number;
+  total_elements: number;
   totalPages: number;
   size: number;
   number: number;

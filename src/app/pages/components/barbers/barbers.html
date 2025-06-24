@@ -132,17 +132,20 @@
                             <div
                                 class="w-full sm:w-[100%] lg:w-[47%] p-3 w-auto !bg-slate-100 rounded-md flex items-center justify-between">
                                 <label class="!text-gray-500 !font-bold !text-xs">Ventas del mes:</label>
-                                <label class="!font-bold !text-xs">$25.000.000</label>
+                                <label class="!font-bold !text-xs">{{ formatSalary(employee.month_sales)}}</label>
                             </div>
                             <div
                                 class=" border-l-3 border-l-slate-400 w-full p-3 w-auto gap-2 !bg-slate-100 rounded-md flex items-center justify-between">
                                 <label class="!font-bold !text-xs">Comisiones pendientes:</label>
-                                <label class="!text-green-600 !font-bold !text-xs">{{ formatSalary(100000) }}</label>
+                                <label class="!text-green-600 !font-bold !text-xs">{{ formatSalary(employee.pending_commissions) }}</label>
                             </div>
                         </div>
                         <div class="flex p-5 gap-4 mt-auto items-center justify-center">
-                            <button matButton="filled" class="!rounded-md !p-2 !h-8">
-                                <span class="!text-xs">💰 Comisiones</span>
+                            <button matButton="outlined" class="!rounded-md !p-2" (click)="openCommissions(employee)">
+                                <span class="!text-xs cursor-pointer" >🕓 Historial</span>
+                            </button>
+                            <button matButton="filled" (click)="onPayBarber(employee);" class="!rounded-md !p-2" [disabled]="!employee.pending_commissions || employee.pending_commissions == 0">
+                                <span class="!text-xs">💰 Pagar Comisiones</span>
                             </button>
 
                         </div>
@@ -151,7 +154,7 @@
 
             </div>
             <div>
-                <mat-paginator [length]="data.length" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                <mat-paginator [length]="pageLe" [pageIndex]="pageIndex" [pageSize]="pageSize"
                     (page)="onPageChange($event)" [showFirstLastButtons]="true" [pageSizeOptions]="[5, 10, 20, 50, 100]"
                     aria-label="Select page">
                 </mat-paginator>

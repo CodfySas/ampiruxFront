@@ -12,6 +12,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../../../material/material-module';
 import { SmartTable } from '../../shared/smart-table/smart-table';
 import { ExcelColumn, ExcelService } from '../../../services/excel.service';
+import { CommissionForm } from '../../shared/forms/commission-form/commission-form';
+import { CommissionService } from '../../../services/commission.service';
 
 @Component({
   selector: 'app-barbers',
@@ -131,6 +133,7 @@ export class Barbers implements OnInit, AfterViewInit {
 
   pageSize = 20;
   pageIndex = 0;
+  pageLe = 0;
 
   data: Barber[] = []
 
@@ -141,7 +144,7 @@ export class Barbers implements OnInit, AfterViewInit {
   showImportHelp = false;
 
   constructor(private barberSvc: BarberService, private dialog: MatDialog,
-    private excelService: ExcelService
+    private excelService: ExcelService, private commissionSvc: CommissionService
   ) { }
 
   tooglePMode() {
@@ -177,8 +180,8 @@ export class Barbers implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     var savedView = localStorage.getItem("employees_view");
-    if(savedView) {
-      if(savedView == 'true'){
+    if (savedView) {
+      if (savedView == 'true') {
         this.view = true
       }
     }
@@ -205,6 +208,7 @@ export class Barbers implements OnInit, AfterViewInit {
         this.data = res.content;
         this.pageSize = res.size;
         this.pageIndex = res.number;
+        this.pageLe = res.total_elements;
       });
   }
 
@@ -264,6 +268,40 @@ export class Barbers implements OnInit, AfterViewInit {
             Swal.fire({
               icon: 'error',
               title: 'No se ha podido eliminar',
+              text: err?.error?.message || 'Porfavor verifique su conexión a internet o intentelo más tarde',
+            });
+          }
+        });
+      }
+    });
+  }
+
+  onPayBarber(barber: Barber) {
+    Swal.fire({
+      title: 'Pagar comisiones',
+      text: `¿Pagar todas las comisiones pendientes de ${barber.name}?`,
+      icon: 'question',
+      reverseButtons: true,
+      showCancelButton: true,
+      confirmButtonColor: '#00dd22',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, Pagar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.commissionSvc.payCommissions(barber.uuid!).subscribe({
+          next: (res) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Comisiones Pagadas!',
+              text: `Se han pagado todas las comisiones de ${barber.name}.`,
+            });
+            this.loadData();
+          },
+          error: (err) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'No se ha podido pagar',
               text: err?.error?.message || 'Porfavor verifique su conexión a internet o intentelo más tarde',
             });
           }
@@ -385,13 +423,19 @@ export class Barbers implements OnInit, AfterViewInit {
     const separate = name.split(" ")
     let result = ''
     for (const word of separate) {
-      result += word.substring(0,1)
+      result += word.substring(0, 1)
     }
-    return result.substring(0,2);
+    return result.substring(0, 2);
   }
 
   changeView() {
     this.view = !this.view
     localStorage.setItem("employees_view", `${this.view}`)
+  }
+
+  openCommissions(barber: Barber) {
+    this.dialog.open(CommissionForm, {
+      data: barber
+    })
   }
 }

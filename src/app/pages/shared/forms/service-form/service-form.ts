@@ -19,7 +19,7 @@ export class ServiceForm {
   new: Service = {}
   products: Product[] = []
   filteredProducts: Product[] = []
-  searchTerm: string = ''
+  searchProduct: string = ''
   isLoading = true;
 
   constructor(private catSvc: ServiceService, private dialogRef: MatDialogRef<ServiceForm>,
@@ -35,56 +35,41 @@ export class ServiceForm {
     } else {
       this.new.default_products = []
     }
-    this.productSvc.getProducts('-', 0, 999999).subscribe((p)=> this.products = p.content)
+    this.productSvc.getProducts('-', 0, 999999).subscribe((p) => {
+      this.products = p.content
+      this.filteredProducts = p.content
+    })
     this.isLoading = false;
   }
 
-  onSearchProducts() {
-    if (this.searchTerm.trim() === '') {
-      this.filteredProducts = []
-      return
+  onSearchProduct(): void {
+
+    if (!this.searchProduct || this.searchProduct.trim() === '') {
+      return;
     }
-    
-    const search = this.searchTerm.toLowerCase()
-    this.filteredProducts = this.products.filter(p => 
-      p.name?.toLowerCase().includes(search) || 
-      p.description?.toLowerCase().includes(search)
-    )
+
+    const filterValue = this.searchProduct.toLowerCase().trim();
+    this.filteredProducts = this.products.filter(product =>
+      product.name?.toLowerCase().includes(filterValue) ||
+      product.description?.includes(filterValue)
+    ).slice(0, 10);
   }
 
   addProduct(product: Product) {
-    const exists = this.new.default_products?.find(dp => dp.product_uuid === product.uuid)
-    if (exists) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Producto ya agregado',
-        text: 'Este producto ya está en la lista',
-      });
-      return
-    }
-
-    const newDefaultProduct: ServiceDefaultProduct = {
+    this.searchProduct = ''
+    const newA = this.new.default_products || []
+    newA.push({
       product_uuid: product.uuid,
+      product: product,
       quantity: 1,
-      unit: 'unidad',
-      cost_type: 'cortesy'
-    }
-
-    this.new.default_products?.push(newDefaultProduct)
+      unit: product.unit,
+      cost_type: 'cortesy',
+    })
+    this.new.default_products = newA;
   }
 
   removeProduct(index: number) {
     this.new.default_products?.splice(index, 1)
-  }
-
-  getProductName(productUuid: string): string {
-    const product = this.products.find(p => p.uuid === productUuid)
-    return product?.name || 'Producto no encontrado'
-  }
-
-  getProductUnit(productUuid: string): string {
-    const product = this.products.find(p => p.uuid === productUuid)
-    return product?.unit || 'Producto no encontrado'
   }
 
   onSave() {

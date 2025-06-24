@@ -1,0 +1,163 @@
+<mat-dialog-content class="flex flex-col gap-4 p-2 relative ">
+    <mat-spinner *ngIf="isLoading" diameter="40"
+        class="!absolute !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2 z-100"></mat-spinner>
+    <div class="!p-2 flex gap-5 justify-between items-center">
+        <div>
+            <p class="!text-2xl !text-purple-700">
+                {{ data?.uuid ? (this.new.read ? 'Ver Cita': 'Editar Cita') : 'Nueva Cita'}}
+            </p>
+            <p class="!text-lg">{{ formatDate(new.scheduled_at ?? '')}}</p>
+        </div>
+        <div class="w-[60%] md:w-[50%]">
+            <div *ngIf="checking" class="flex items-center justify-center">
+                <mat-spinner diameter="30" class="mr-2"></mat-spinner>
+                <span class="text-gray-600 !text-xs">Verificando Google Calendar...</span>
+            </div>
+            <div *ngIf="!isGoogleCalendarAuthenticated && !checking" class="">
+                <button mat-raised-button color="primary" (click)="signInToGoogleCalendar()" [disabled]="isLoading" class="!text-xs">
+                    <mat-icon>login</mat-icon>
+                    Google Calendar
+                </button>
+            </div>
+            <div *ngIf="isGoogleCalendarAuthenticated && !checking" class="">
+                <div class="flex flex-col flex-wrap justify-end items-end">
+                    <div class="flex items-center justify-end !text-xs">
+                        <mat-icon class="!text-green-600 mr-2 !w-[30px]">event</mat-icon>
+                        <span class="text-green-700 !text-end">Conectado a google Calendar</span>
+                    </div>
+                    <button mat-button (click)="signOutFromGoogleCalendar()">
+                        <mat-icon>logout</mat-icon>
+                        Desconectar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <mat-divider></mat-divider>
+
+    <div class="mt-3" [ngClass]="isLoading ? 'opacity-50' : ''">
+        <div class="flex flex-wrap gap-5 p-3">
+
+            <div class="w-full md:w-[25%]">
+                <p class="mb-1">Hora *</p>
+                <mat-form-field class="w-full min" required>
+                    <input #timeInput matInput type="time" [(ngModel)]="hour" (focus)="timeInput.showPicker()">
+                </mat-form-field>
+            </div>
+
+            <div class="w-full md:w-[33%]">
+                <p class="mb-1" *ngIf="!clientResult">Cliente</p>
+                <div class="flex gap-2 w-full">
+                    <mat-form-field class="min w-full" *ngIf="!clientResult">
+                        <input matInput [(ngModel)]="searchDni" (input)="onSearchDni()" [matAutocomplete]="clientAuto"
+                            placeholder="Cédula del cliente" name="searchClient" [disabled]="this.new.read==true">
+                        <mat-icon matPrefix>search</mat-icon>
+                        <mat-autocomplete #clientAuto="matAutocomplete">
+                            <mat-option *ngIf="searchDni && searchDni != '' && !isExistingClient()" [value]="null"
+                                (onSelectionChange)="openClientForm()">
+                                <div class="flex items-center gap-2 text-blue-600">
+                                    <mat-icon>person_add</mat-icon>
+                                    <span>Crear cliente con cédula: <strong>{{ searchDni }}</strong></span>
+                                </div>
+                            </mat-option>
+
+                            <mat-option *ngFor="let client of filteredClients" [value]="client.dni"
+                                (click)="setClient(client)">
+                                <div class="flex flex-col">
+                                    <div class="font-medium">{{ client.name }}</div>
+                                    <div class="text-sm text-gray-600">{{ client.dni }}</div>
+                                </div>
+                            </mat-option>
+
+                            <mat-option *ngIf="filteredClients.length === 0 && searchDni && searchDni != ''" disabled>
+                                <div class="text-gray-500">No se encontraron clientes</div>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <div *ngIf="clientResult" class="w-full">
+                        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg relative">
+                            <mat-icon class="!absolute top-1 right-1 cursor-pointer !text-sm" (click)="unsetClient()"
+                                *ngIf="!this.new.read">close</mat-icon>
+                            <div class="flex items-center gap-2 text-blue-700 mb-2">
+                                <mat-icon class="text-blue-600">person</mat-icon>
+                                <span class="font-medium">Cliente seleccionado:</span>
+                            </div>
+                            <div class="text-xs text-blue-600">
+                                <div><strong>Nombre:</strong> {{ clientResult.name }}</div>
+                                <div><strong>Cédula:</strong> {{ clientResult.dni }}</div>
+                                <div *ngIf="clientResult?.email">
+                                    <strong>Correo:</strong> {{clientResult.email}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-[33%]">
+                <p class="mb-1" *ngIf="!serviceResult">Servicio</p>
+                <div class="flex gap-2 w-full">
+                    <mat-form-field class="min w-full" *ngIf="!serviceResult">
+                        <input matInput [(ngModel)]="searchService" (input)="onSearchService()"
+                            [matAutocomplete]="serviceAuto" placeholder="nombre del servicio" name="searchService"
+                            [disabled]="this.new.read==true">
+                        <mat-icon matPrefix>search</mat-icon>
+                        <mat-autocomplete #serviceAuto="matAutocomplete">
+                            <mat-option *ngFor="let service of filteredServices" [value]="service.name"
+                                (click)="setService(service)">
+                                <div class="flex flex-col">
+                                    <div class="font-medium">{{ service.name }}</div>
+                                    <div class="text-sm text-gray-600" *ngIf="service.duration_minutes">{{
+                                        formatDuration(service.duration_minutes ) }}</div>
+                                </div>
+                            </mat-option>
+
+                            <mat-option *ngIf="filteredServices.length === 0 && searchService && searchService != ''"
+                                disabled>
+                                <div class="text-gray-500">No se encontraron servicios</div>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <div *ngIf="serviceResult" class="w-full">
+                        <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg relative">
+                            <mat-icon class="!absolute top-1 right-1 cursor-pointer !text-sm" (click)="unsetService()"
+                                *ngIf="!this.new.read">close</mat-icon>
+                            <div class="flex items-center gap-2 text-amber-700 mb-2">
+                                <mat-icon class="text-amber-600">person</mat-icon>
+                                <span class="font-medium">Servicio seleccionado:</span>
+                            </div>
+                            <div class="text-xs text-amber-600">
+                                <div><strong>Nombre:</strong> {{ serviceResult.name }}</div>
+                                <div><strong>Duración:</strong> {{ formatDuration(serviceResult.duration_minutes ?? 0)
+                                    }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full">
+                <label class="mb-1 text-xs text-gray-600">Notas</label>
+                <mat-form-field class="w-full">
+                    <textarea matInput class="!resize-none" [(ngModel)]="new.notes"
+                        placeholder="Notas adicionales"></textarea>
+                </mat-form-field>
+            </div>
+
+
+        </div>
+        <mat-divider class="!border-black"></mat-divider>
+    </div>
+    <div class="flex flex-wrap gap-5" [ngClass]="isLoading ? 'opacity-50' : ''">
+    </div>
+    <br>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
+    <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading"
+        (click)=" !this.new.read ? onSave() : onClose()">
+        {{ data?.uuid ? (this.new.read ? 'Confirmar': 'Guardar Cambios') : 'Crear Cita' }}
+    </button>
+</mat-dialog-actions>

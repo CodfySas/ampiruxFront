@@ -35,8 +35,8 @@ export class ExcelService {
    * Exporta datos a Excel
    */
   exportToExcel(
-    data: any[], 
-    fileName: string, 
+    data: any[],
+    fileName: string,
     sheetName: string = 'Datos',
     showSuccessMessage: boolean = true
   ): void {
@@ -52,6 +52,15 @@ export class ExcelService {
     try {
       // Crear el workbook y worksheet
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+
+      Object.keys(ws).forEach((cell) => {
+        const cellValue = ws[cell].v;
+        if (typeof cellValue === 'string' && cellValue.includes('\n')) {
+          if (!ws[cell].s) ws[cell].s = {};
+          ws[cell].s.alignment = { wrapText: true };
+        }
+      });
+
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
 
       // Agregar la hoja al workbook
@@ -97,7 +106,7 @@ export class ExcelService {
     file: File,
     config: ExcelImportConfig
   ): Promise<ExcelValidationResult | null> {
-    
+
     return new Promise((resolve, reject) => {
       // Verificar que sea un archivo Excel
       const validTypes = [
@@ -166,7 +175,7 @@ export class ExcelService {
    * Valida los datos importados
    */
   private validateImportData(
-    data: any[], 
+    data: any[],
     config: ExcelImportConfig
   ): ExcelValidationResult {
     const validData: any[] = [];
@@ -182,7 +191,7 @@ export class ExcelService {
       // Procesar cada columna definida en la configuración
       config.columns.forEach(column => {
         const value = this.getExcelValue(row, column.possibleKeys || [column.key, column.label]);
-        
+
         // Validar campos requeridos
         if (column.required && (!value || value.toString().trim() === '')) {
           errors.push(`Fila ${rowNumber}: ${column.label} es obligatorio`);
@@ -221,7 +230,7 @@ export class ExcelService {
       // Validar duplicados con datos existentes
       if (!config.allowDuplicates && config.existingData && config.duplicateKey) {
         const duplicateValue = processedRow[config.duplicateKey];
-        const existingItem = config.existingData.find(item => 
+        const existingItem = config.existingData.find(item =>
           item[config.duplicateKey || ""]?.toLowerCase().trim() === duplicateValue?.toLowerCase().trim()
         );
 
@@ -334,7 +343,7 @@ export class ExcelService {
     importFunction: (item: any) => Promise<T>,
     entityName: string = 'elementos'
   ): Promise<{ successCount: number; errorCount: number; errors: string[] }> {
-    
+
     Swal.fire({
       title: `Importando ${entityName}...`,
       text: `Creando ${data.length} ${entityName}`,

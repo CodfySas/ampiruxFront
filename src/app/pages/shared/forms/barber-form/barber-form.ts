@@ -41,7 +41,7 @@ new: Barber = {}
       return;
     }
 
-    if (this.data) {
+    if (this.data?.uuid) {
       this.barberSvc.updateBarber(this.data.uuid!, this.new).subscribe({
         next: (res) => {
           Swal.fire({
@@ -71,7 +71,7 @@ new: Barber = {}
             title: 'Empleado creado!',
             text: 'El Empleado se ha creado exitosamente',
           });
-          this.onClose()
+          this.dialogRef.close(res);
           this.isLoading = false;
           return;
         },

@@ -25,6 +25,8 @@ export class SmartTable {
   @Input() pMode = 2;
   @Input() showFilters = false;
   @Input() showEditStock = false;
+  @Input() sale = false;
+  @Input() saleCompleted = false;
 
   @Input() cellTemplate?: TemplateRef<any>; // para una sola plantilla global
   @Input() cellTemplates?: { [key: string]: TemplateRef<any> };
@@ -34,6 +36,9 @@ export class SmartTable {
   @Output() pageChange = new EventEmitter<PageEvent>();
   @Output() globalFilterChange = new EventEmitter<string>();
   @Output() editItem = new EventEmitter<any>();
+  @Output() payItem = new EventEmitter<any>();
+  @Output() viewItem = new EventEmitter<any>();
+  @Output() printItem = new EventEmitter<any>();
   @Output() deleteItem = new EventEmitter<any>();
 
   getValueByPath(obj: any, path: string): any {
@@ -55,6 +60,18 @@ export class SmartTable {
 
   onEditItem(item: any) {
     this.editItem.emit(item);
+  }
+
+  onPayItem(item: any) {
+    this.payItem.emit(item);
+  }
+
+  onViewItem(item: any) {
+    this.viewItem.emit(item);
+  }
+
+  onPrintItem(item: any) {
+    this.printItem.emit(item);
   }
 
   onDeleteItem(item: any) {

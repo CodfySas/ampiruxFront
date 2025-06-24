@@ -36,82 +36,69 @@
     </div>
   </div>
   <br>
-  <mat-accordion class="mt-5">
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title> Productos incluidos ({{ new.default_products?.length || 0 }}) </mat-panel-title>
-      </mat-expansion-panel-header>
+  <div class="flex justify-between my-5 w-full flex-wrap">
+    <div class="w-full md:w-[47%]">
+      <h1 class="primary !text-lg">Productos incluidos</h1>
+    </div>
+    <div class="w-full md:w-[47%]">
+      <p class="mb-1 primary">Añadir producto</p>
+      <div class="flex gap-2 w-full">
+        <mat-form-field class="min w-full">
+          <input matInput [(ngModel)]="searchProduct" (input)="onSearchProduct()" [matAutocomplete]="searchProductM"
+            placeholder="Busca el producto" name="searchProduct">
+          <mat-icon matPrefix>search</mat-icon>
+          <mat-autocomplete #searchProductM="matAutocomplete">
+            <mat-option *ngFor="let product of filteredProducts" class="!p-3" (click)="addProduct(product)">
+              <div class="flex flex-col">
+                <div class="font-medium">{{ product.name }}</div>
+              </div>
+            </mat-option>
+            <mat-option *ngIf="filteredProducts.length === 0 && searchProduct && searchProduct != ''" disabled>
+              <div class="text-gray-500">No se encontraron servicios</div>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="this.new.default_products && this.new.default_products.length > 0" class="p-2 bg-purple-100 my-2 rounded-md">
+    <div class="my-1 p-2" *ngFor="let dp of this.new.default_products; let j = index">
+      <label class="font-bold">{{dp.product?.name}}</label>
+      <div class="flex justify-between my-2 items-end flex-wrap">
 
-      <div class="flex flex-col gap-4">
-        <div *ngIf="new.default_products && new.default_products.length > 0" class="mt-4">
-          <h4 class="font-medium mb-3">Productos seleccionados:</h4>
-          <div *ngFor="let defaultProduct of new.default_products; let i = index"
-            class="border rounded-lg p-4 mb-3 bg-gray-50">
-            <div class="flex justify-between items-start mb-3">
-              <div class="font-medium">{{ getProductName(defaultProduct.product_uuid!) }}</div>
-              <button mat-icon-button color="warn" (click)="removeProduct(i)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <mat-form-field class="w-full">
-                <mat-label>Cantidad</mat-label>
-                <input matInput type="number" [(ngModel)]="defaultProduct.quantity" min="1">
-                <span matSuffix>&nbsp; {{getProductUnit(defaultProduct.product_uuid!)}}&nbsp;</span>
-              </mat-form-field>
-
-              <mat-form-field class="w-full">
-                <mat-label>¿Quién paga?</mat-label>
-                <mat-select [(ngModel)]="defaultProduct.cost_type">
-                  <mat-option value="cortesy">Barbería (cortesía)</mat-option>
-                  <mat-option value="client">Cliente</mat-option>
-                  <mat-option value="barber">Barbero</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-        </div>
-        
-        <div class="flex gap-3 items-end">
-          <mat-form-field class="flex-1">
-            <mat-label>Buscar productos</mat-label>
-            <input matInput [(ngModel)]="searchTerm" (input)="onSearchProducts()"
-              placeholder="Escribe para buscar productos...">
-            <mat-icon matPrefix>search</mat-icon>
+        <div class="w-[25%] md:w-[25%]">
+          <label>cantidad</label>
+          <mat-form-field class="min w-full">
+            <label matSuffix>{{dp.product?.unit}}&nbsp;&nbsp;</label>
+            <input matInput [(ngModel)]="dp.quantity" type="number">
           </mat-form-field>
         </div>
-
-        <div *ngIf="searchTerm && filteredProducts.length > 0" class="max-h-48 overflow-y-auto border rounded-lg">
-          <div *ngFor="let product of filteredProducts"
-            class="p-3 border-b hover:bg-gray-50 cursor-pointer flex justify-between items-center"
-            (click)="addProduct(product)">
-            <div>
-              <div class="font-medium">{{ product.name }}</div>
-              <div class="text-sm text-gray-600">{{ product.description }}</div>
-            </div>
-            <mat-icon class="text-green-600">add_circle</mat-icon>
-          </div>
+        <div class="w-[50%] md:w-[50%]">
+          <label>¿Quién paga?</label>
+          <mat-form-field class="w-full min">
+            <mat-select [(ngModel)]="dp.cost_type">
+              <mat-option value="cortesy">Barbería (cortesía)</mat-option>
+              <mat-option value="client">Cliente</mat-option>
+              <mat-option value="barber">Barbero</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="w-5">
+          <mat-icon class="!text-red-700 cursor-pointer" (click)="removeProduct(j)">delete</mat-icon>
         </div>
 
-        <div *ngIf="searchTerm && filteredProducts.length === 0 && searchTerm.trim() !== ''"
-          class="text-center text-gray-500 py-4">
-          No se encontraron productos
-        </div>
-
-        
       </div>
-    </mat-expansion-panel>
-  </mat-accordion>
+      <mat-divider *ngIf="j != (this.new.default_products?.length||0)-1"
+        class="!border-gray-400 !w-[80%] !place-self-center"></mat-divider>
+    </div>
+  </div>
 
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <div class="flex justify-end p-2 gap-3 mt-8">
-    <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
-    <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading" (click)="onSave()">
-      {{ data ? 'Guardar Cambios' : 'Crear Servicio' }}
-    </button>
-  </div>
+  <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
+  <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading" (click)="onSave()">
+    {{ data ? 'Guardar Cambios' : 'Crear Servicio' }}
+  </button>
 
 </mat-dialog-actions>

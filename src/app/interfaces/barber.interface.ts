@@ -12,11 +12,13 @@ export interface Barber extends Base {
   base_salary?: string;
   commission_rate?: number;
   schedule?: Schedule[];
+  month_sales?: number;
+  pending_commissions?: number;
 }
 
 export interface Schedule extends Base {
   barber_uuid?: string;
-  day_of_week?: number;
+  day_of_week?: number; //0 sunday
   active?: boolean;
   start_time?: string;
   end_time?: string;

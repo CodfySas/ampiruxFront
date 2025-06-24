@@ -1,0 +1,68 @@
+<div
+    class="min-h-[100vh] w-full flex bg-[url(assets/BarberiaF.png)] bg-cover items-center justify-center p-5 bg-center">
+    <mat-card class="p-10 custom-border !w-auto !h-auto">
+        <div class="top-right-horizontal"></div>
+        <div class="bottom-left-horizontal"></div>
+        <div class="bottom-left-vertical"></div>
+        <mat-card-header class="flex justify-center flex-col text-center">
+            <h1 class="text-2xl font-bold primary">{{barber.name}}</h1>
+            <p class="!text-lg">Solicita tu reserva</p>
+        </mat-card-header>
+        <mat-card-content class="flex justify-center mb-3 w-full md:w-[500px]">
+            <form (ngSubmit)="onsubmit()">
+                <div class="!flex gap-5 flex-wrap">
+                    <div class="w-full md:w-[45%]">
+                        <p>Nombre *</p>
+                        <mat-form-field class="w-full">
+                            <input matInput name="name" autocomplete="name" [(ngModel)]="reserve.name"
+                                placeholder="Nombre completo" required [disabled]="isLoading">
+                        </mat-form-field>
+                    </div>
+                    <div class="w-full md:w-[45%]">
+                        <p>DNI *</p>
+                        <mat-form-field class="w-full">
+                            <input matInput name="dni" autocomplete="cc-number" [(ngModel)]="reserve.dni"
+                                placeholder="Cédula" required [disabled]="isLoading">
+                        </mat-form-field>
+                    </div>
+                    <div class="w-full md:w-[45%]">
+                        <p>Correo</p>
+                        <mat-form-field class="w-full">
+                            <input matInput name="email" autocomplete="email" [(ngModel)]="reserve.email"
+                                placeholder="Correo" [disabled]="isLoading">
+                        </mat-form-field>
+                    </div>
+                    <div class="w-full md:w-[45%]">
+                        <p>Telefono</p>
+                        <mat-form-field class="w-full">
+                            <input matInput name="phone" autocomplete="mobile" [(ngModel)]="reserve.phone"
+                                placeholder="Telefono movil" [disabled]="isLoading">
+                        </mat-form-field>
+                    </div>
+                    <div class="w-full md:w-[45%]">
+                        <p>Dia *</p>
+                        <mat-form-field class="w-full">
+                            <input matInput name="date" type="date" [(ngModel)]="reserve.date"
+                                placeholder="Fecha de reserva" required [disabled]="isLoading">
+                        </mat-form-field>
+                    </div>
+                    <div class="w-full md:w-[45%]">
+                        <p>Hora *</p>
+                        <mat-form-field class="w-full">
+                            <input matInput name="hour" type="hour" [(ngModel)]="reserve.hour"
+                                placeholder="Hora de reserva" required [disabled]="isLoading">
+                        </mat-form-field>
+                    </div>
+                    <button mat-flat-button color="primary" class="!rounded-xs" type="submit">
+                        <mat-spinner *ngIf="isLoading" diameter="10"></mat-spinner> {{ isLoading ? 'Cargando...'
+                        : 'Solicitar cita' }}
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+        <mat-card-footer class="mt-2 text-gray-500 text-sm">
+            <p>&copy; 2025 Ampirux. Todos los derechos reservados.</p>
+            <p>Un producto de Codfy SAS</p>
+        </mat-card-footer>
+    </mat-card>
+</div>

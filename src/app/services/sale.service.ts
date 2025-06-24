@@ -19,7 +19,11 @@ export class SaleService {
       size: size
     };
     if (sortColumn && sortDirection) {
-      params.sort = `${sortColumn},${sortDirection}`;
+      var sort = sortColumn
+      if(sortColumn == 'created_at'){
+        sort = 'createdAt'
+      }
+      params.sort = `${sort},${sortDirection}`;
     }
     return this.http.get<Page<Sale>>(
       `${this.apiUrl}/v1/sales/filter/${where}`,

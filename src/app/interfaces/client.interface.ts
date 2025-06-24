@@ -8,4 +8,9 @@ export interface Client extends Base {
   dni?: string;
   notes?: string;
   barbershop_uuid?: string;
+
+  last_visit?: string;
+  visit_count?: number;
+  total_pay?: number;
+  last_pay?: number;
 }

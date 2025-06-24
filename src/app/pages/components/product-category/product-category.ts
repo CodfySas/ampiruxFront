@@ -67,6 +67,7 @@ isLoading = true;
 
   pageSize = 20;
   pageIndex = 0;
+  pageLe = 0;
 
   data: Category[] = []
 
@@ -134,6 +135,7 @@ isLoading = true;
         this.data = res.content;
         this.pageSize = res.size;
         this.pageIndex = res.number;
+        this.pageLe = res.total_elements;
       });
   }
 

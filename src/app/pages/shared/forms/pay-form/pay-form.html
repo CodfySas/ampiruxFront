@@ -1,0 +1,35 @@
+<mat-dialog-content class="flex flex-col gap-4 p-2 relative">
+    <mat-spinner *ngIf="isLoading" diameter="40"
+        class="!absolute !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2 z-100"></mat-spinner>
+    <div class="!text-2xl !text-purple-700 !p-2 flex flex-col gap-3 ">
+        Pagar Venta
+        <mat-divider></mat-divider>
+    </div>
+    <div class="flex flex-wrap gap-5 items-center justify-between" [ngClass]="isLoading ? 'opacity-50' : ''">
+        <div class="flex items-center gap-3 cursor-pointer" (click)="viewSale()">
+            <h1 class="!text-lg primary">Venta {{this.new.code}}</h1>
+            <mat-icon class="primary">visibility</mat-icon>
+        </div>
+        <div class="w-[50%]">
+            <label class="mb-1 text-xs text-gray-600">Método de pago <span class="text-red-500">*</span></label>
+            <mat-form-field class="w-full">
+                <mat-select [(ngModel)]="this.new.payment_method">
+                        <mat-option value="Cash">Efecivo</mat-option>
+                        <mat-option value="Card">Tarjeta</mat-option>
+                        <mat-option value="Transfer">Transferencia</mat-option>
+                        <mat-option value="Other">Otro</mat-option>
+                    </mat-select>
+            </mat-form-field>
+        </div>
+        
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
+    <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading" (click)="onSave()">
+        Pagar
+    </button>
+
+</mat-dialog-actions>

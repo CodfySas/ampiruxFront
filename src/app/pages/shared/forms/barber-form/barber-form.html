@@ -2,7 +2,7 @@
   <mat-spinner *ngIf="isLoading" diameter="40"
     class="!absolute !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2 z-100"></mat-spinner>
   <div class="!text-2xl !text-purple-700 !p-2 flex flex-col gap-3 ">
-    {{ data ? 'Editar Empleado' : 'Nuevo Empleado' }}
+    {{ data?.uuid ? 'Editar Empleado' : 'Nuevo Empleado' }}
     <mat-divider></mat-divider>
   </div>
   <div class="flex flex-wrap gap-5" [ngClass]="isLoading ? 'opacity-50' : ''">
@@ -74,7 +74,7 @@
   <div class="flex justify-end p-2 gap-3 mt-8">
     <button matButton="outlined" class="!rounded-lg" (click)="onClose()">Cancelar</button>
     <button mat-flat-button class="!rounded-lg" color="primary" [disabled]="isLoading" (click)="onSave()">
-      {{ data ? 'Guardar Cambios' : 'Crear Empleado' }}
+      {{ data?.uuid ? 'Guardar Cambios' : 'Crear Empleado' }}
     </button>
   </div>
 

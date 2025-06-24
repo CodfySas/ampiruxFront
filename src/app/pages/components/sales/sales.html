@@ -10,18 +10,6 @@
     <mat-spinner *ngIf="isLoading" diameter="25" class="!absolute"></mat-spinner>
     <div>
         <div>
-            <input #fileInput type="file" accept=".xlsx,.xls" style="display: none;" (change)="importFromExcel($event)">
-            <ng-template #nameCell2 let-element="element">
-                <div class="flex items-center">
-                    <span>{{ element?.name }}</span>
-                    <mat-icon *ngIf="element?.isNew" class="ml-2 text-green-500" matTooltip="recién importada">
-                        new_releases
-                    </mat-icon>
-                </div>
-            </ng-template>
-        </div>
-
-        <div>
             <div class="flex justify-end items-center gap-2 mb-2">
                 <mat-form-field *ngIf="viewSearch" class="min">
                     <input matInput type="search" [(ngModel)]="result.global" (input)="loadData()"
@@ -56,39 +44,38 @@
                         Exportar a
                         Excel
                     </button>
-                    <button mat-menu-item (click)="fileInput.click()">
-                        <mat-icon >file_upload</mat-icon>
-                        Importar desde
-                        Excel
-                    </button>
-                    <button mat-menu-item (click)="openImportHelpModal()">
-                        <mat-icon>help_outline</mat-icon>
-                        ¿Cómo importar?
-                    </button>
                 </div>
             </mat-menu>
             <div class="overflow-x-auto">
 
                 <app-smart-table [headers]="result.headers" [data]="data" [pageSize]="pageSize"
-                    (editItem)="onEditSale($event)" [pageIndex]="pageIndex" [sortColumn]="sortColumn"
+                    (editItem)="onEditSale($event)" [pageIndex]="pageIndex" [sortColumn]="sortColumn" (printItem)="onPrintSale($event)"
                     [sortDirection]="sortDirection" (deleteItem)="onDeleteSale($event)" [loading]="isLoading"
-                    [pMode]="pMode" [showFilters]="viewFilters"
+                    [pMode]="pMode" [showFilters]="viewFilters" [sale]="true" (payItem)="onPaySale($event)" (viewItem)="onViewSale($event)"
                     (sortChange)="onSortChange($event)" (pageChange)="onPageChange($event)"
                     [cellTemplates]="cellTemplates" (globalFilterChange)="onGlobalChange($event)"
                     (filtersChange)="loadData()">
                 </app-smart-table>
 
-                <ng-template #durationCell let-item="item" let-header="header">
-                    ⏱️ {{ formatDuration(item.duration_minutes) }}
+                <ng-template #totalCell let-item="item" let-header="header">
+                    {{ formatSalary(item.total) }}
                 </ng-template>
 
-                <ng-template #priceCell let-item="item" let-header="header">
-                    ${{ item.price }}
+                <ng-template #dateCell let-item="item" let-header="header">
+                    {{ formatDate(item.created_at) }}
+                </ng-template>
+
+                <ng-template #statusCell let-item="item" let-header="header">
+                    <label [ngClass]="item.status=='PENDING' ? 'text-amber-600': 'text-green-600'">{{ formatStatus(item.status) }}</label>
+                </ng-template>
+
+                <ng-template #listCell let-item="item" let-header="header">
+                    <label class="whitespace-pre-line">{{ formatList(item) }}</label>
                 </ng-template>
 
             </div>
             <div>
-                <mat-paginator [length]="data.length" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                <mat-paginator [length]="pageLe" [pageIndex]="pageIndex" [pageSize]="pageSize"
                     (page)="onPageChange($event)" [showFirstLastButtons]="true" [pageSizeOptions]="[5, 10, 20, 50, 100]"
                     aria-label="Select page">
                 </mat-paginator>

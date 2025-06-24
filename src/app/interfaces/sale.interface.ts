@@ -16,16 +16,32 @@ export interface Sale extends Base {
   total?: number;
   discount_uuid?: string;
   barbershop_uuid?: string;
-  sale_products?: SaleProduct[];
   services?: SaleServiceDto[];
+  products?: SaleProduct[];
+  subtotal_services?: number;
+  commissions?: number;
+  commission_discount?: number;
+  subtotal_service_products?: number;
+  subtotal_products?: number;
+  discount_percent?: number;
+  subtotal_discount?: number;
+  has_iva?: boolean;
+  iva_service?: boolean;
+  iva_product?: boolean;
+  iva?: number;
+  subtotal_services_iva?: number;
+  subtotal_products_iva?: number;
+  subtotal_service_products_iva?: number;
+  read?: boolean;
 }
 
 export interface SaleProduct extends Base {
   product_uuid?: string;
   sale_uuid?: string;
   quantity?: number;
-  unit?: string;
-  cost_type?: string;
+  price?: number;
+  total?: number;
+  product?: Product;
 }
 
 export interface SaleServiceDto extends Base {
@@ -37,6 +53,7 @@ export interface SaleServiceDto extends Base {
   commission_rate?: number;
   barber_uuid?: string;
   used_products?: SaleServiceProductDto[];
+  detail?: boolean; 
 }
 
 export interface SaleServiceProductDto extends Base {
@@ -46,5 +63,5 @@ export interface SaleServiceProductDto extends Base {
   quantity?: number;
   unit?: string;
   cost_type?: string;
-  price?: string;
+  price?: number;
 }

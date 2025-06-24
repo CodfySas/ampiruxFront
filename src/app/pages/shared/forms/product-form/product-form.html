@@ -28,15 +28,15 @@
       </mat-form-field>
     </div>
 
-    <div class="w-full md:w-[30%]">
-      <label class="mb-1 text-xs text-gray-600">Stock</label>
+    <div class="w-full md:w-[37%]">
+      <label class="mb-1 text-xs text-gray-600">Stock (envases completos)</label>
       <div class="flex gap-2 items-center">
         <button (click)="updateStock(false)"
           class="w-8 h-8 flex items-center justify-center rounded-sm cursor-pointer border-purple-200 hover:border-purple-600 border-2">
           <mat-icon fontIcon="remove" class="primary"></mat-icon>
         </button>
         <mat-form-field class="flex-1">
-          <input matInput type="number" [(ngModel)]="productNew.stock" placeholder="Cantidad en inventario">
+          <input matInput type="number" [(ngModel)]="productNew.stock" placeholder="0">
         </mat-form-field>
         <button (click)="updateStock(true)"
           class="w-8 h-8 flex items-center justify-center rounded-sm cursor-pointer border-purple-200 hover:border-purple-600 border-2">
@@ -45,8 +45,8 @@
       </div>
     </div>
 
-    <div class="w-full md:w-[19%]">
-      <label class="mb-1 text-xs text-gray-600">Unidad</label>
+    <div class="w-full md:w-[25%]">
+      <label class="mb-1 text-xs text-gray-600">Unidad de medida</label>
       <mat-form-field class="w-full">
         <mat-select [(ngModel)]="productNew.unit" placeholder="ml, gr, u">
           <mat-option [value]="'u'">u</mat-option>
@@ -56,7 +56,26 @@
       </mat-form-field>
     </div>
 
-    <div class="w-full md:w-[42%]">
+    <div class="w-full md:w-[28%]" *ngIf="productNew.unit != 'u' && productNew.unit != '' && productNew.unit">
+      <label class="mb-1 text-xs text-gray-600">Contenido por unidad</label>
+      <div class="flex gap-2 items-center">
+        <mat-form-field class="flex-1">
+          <input matInput type="number" [(ngModel)]="productNew.size_per_unit" placeholder="Ej: 500">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="w-full md:w-[30%]" *ngIf="productNew.unit != 'u' && productNew.unit != '' && productNew.unit">
+      <label class="mb-1 text-xs text-gray-600">Cantidad restante del último envase</label>
+      <div class="flex gap-2 items-center">
+        <mat-form-field class="flex-1">
+          <input matInput type="number" [(ngModel)]="productNew.remain_unit" placeholder="Ej: 500">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="w-full md:w-[64%]">
+      <p>&nbsp;</p>
       <label class="mb-1 text-xs text-gray-600">Categoría</label>
       <mat-form-field class="w-full">
         <mat-select [(ngModel)]="productNew.category_uuid" placeholder="Selecciona una categoría">

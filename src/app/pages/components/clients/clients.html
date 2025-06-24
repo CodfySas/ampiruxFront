@@ -111,22 +111,22 @@
                             <div
                                 class="w-full sm:w-[100%] lg:w-[40%] p-3 w-auto !bg-slate-100 rounded-md flex items-center justify-between">
                                 <label class="!text-gray-500 !font-bold !text-xs">Visitas:</label>
-                                <label class="!font-bold !text-xs">100</label>
+                                <label class="!font-bold !text-xs">{{client.visit_count}}</label>
                             </div>
                             <div
                                 class="w-full sm:w-[100%] lg:w-[54%] p-3 w-auto !bg-slate-100 rounded-md flex items-center justify-between">
                                 <label class="!text-gray-500 !font-bold !text-xs">Total Gastado:</label>
-                                <label class="!font-bold !text-xs">$1.176.000</label>
+                                <label class="!font-bold !text-xs">{{formatSalary(client.total_pay)}}</label>
                             </div>
                             <div
                                 class="w-full sm:w-[100%] lg:w-[43%] p-3 w-auto !bg-slate-100 rounded-md flex items-center justify-between">
                                 <label class="!text-gray-500 !font-bold !text-xs">Ultima visita:</label>
-                                <label class="!font-bold !text-xs">13 jun 2025</label>
+                                <label class="!font-bold !text-xs">{{formatDate(client.last_visit)}}</label>
                             </div>
                             <div
                                 class="w-full sm:w-[100%] lg:w-[51%] p-3 w-auto !bg-slate-100 rounded-md flex items-center justify-between">
-                                <label class="!text-gray-500 !font-bold !text-xs">Técnico preferido:</label>
-                                <label class="!font-bold !text-xs">Edwin Sanjuan</label>
+                                <label class="!text-gray-500 !font-bold !text-xs">Ultima Compra:</label>
+                                <label class="!font-bold !text-xs">{{formatSalary(client.last_pay)}}</label>
                             </div>
                             <div *ngIf="client.notes != '' && client.notes"
                                 class=" border-l-3 border-l-slate-400 w-full p-3 w-auto gap-2 !bg-slate-100 rounded-md flex items-center">
@@ -138,7 +138,7 @@
                             <button matButton="filled" class="!rounded-md !p-0 !h-8">
                                 <span class="!text-xs">📅 Cita</span>
                             </button>
-                            <button matButton="filled" class="!bg-amber-400 !rounded-md !text-xs !p-0 !h-8">
+                            <button matButton="filled" class="!bg-amber-400 !rounded-md !text-xs !p-0 !h-8 cursor-pointer" (click)="openSaleModal(client)">
                                 💰 Venta
                             </button>
 
@@ -148,7 +148,7 @@
 
             </div>
             <div>
-                <mat-paginator [length]="data.length" [pageIndex]="pageIndex" [pageSize]="pageSize"
+                <mat-paginator [length]="pageLe" [pageIndex]="pageIndex" [pageSize]="pageSize"
                     (page)="onPageChange($event)" [showFirstLastButtons]="true" [pageSizeOptions]="[5, 10, 20, 50, 100]"
                     aria-label="Select page">
                 </mat-paginator>

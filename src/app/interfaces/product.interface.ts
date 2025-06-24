@@ -9,6 +9,8 @@ export interface Product extends Base {
   category_uuid?: string;
   category?: ProductCategory;
   barbershop_uuid?: string;
+  size_per_unit?: number;
+  remain_unit?: number;
 }
 
 export interface ProductCategory extends Base {

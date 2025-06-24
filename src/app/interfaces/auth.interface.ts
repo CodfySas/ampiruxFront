@@ -14,6 +14,7 @@ export interface LoginResponse {
   lastname: string;
   fullName: string;
   barbershop_uuid: string;
+  barbershop_code: string;
 }
 
 export interface User extends Base {
@@ -22,4 +23,6 @@ export interface User extends Base {
   name: string;
   lastname: string;
   fullName: string;
+  barbershop_uuid: string;
+  barbershop_code: string;
 }
